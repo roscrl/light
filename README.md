@@ -30,6 +30,10 @@ gonew github.com/roscrl/light
 
 `fsnotify` watch Go template changes in dev mode without recompiling
 
+`golangci-lint` linting
+
+`gofumpt` formatting
+
 ## Deploy
 
 Prefer to deploy on a [VPS](https://specbranch.com/posts/one-big-server/)
