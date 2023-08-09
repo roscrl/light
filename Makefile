@@ -41,7 +41,7 @@ pprof:
 	go tool pprof -http=:8080 bin/profile.pprof
 
 #########################
-#####    Builds     #####
+##        Builds       ##
 #########################
 
 pre-build: lint format generate test
@@ -59,7 +59,7 @@ build-quick:
 	go build -o bin/app .
 
 #########################
-#####      VPS      #####
+##         VPS         ##
 #########################
 
 USER=root
