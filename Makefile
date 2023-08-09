@@ -166,6 +166,7 @@ tools:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.2
 	go install mvdan.cc/gofumpt@v0.5.0
 	go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.19.1
+	mkdir -p ./bin/
 	make tools-esbuild
 	make tools-tailwind
 	echo "Remember to install Zig for the built-in C cross-compiler to Linux (or any C compiler for the 'make build' targets)"
