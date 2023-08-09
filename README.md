@@ -20,7 +20,7 @@ gonew github.com/roscrl/light
 
 `@hotwired/stimulus` lightweight JS functionality
 
-`go-sqlite3` database driver (requires `zig cc` to compile x86 from ARM)
+`go-sqlite3` database driver, requires CGO to build, prefer `zig cc` over `gcc` for easier cross compilation
 
 `sqlc` generate Go code from [SQL queries](core/db/query.sql)
 
