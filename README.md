@@ -16,8 +16,6 @@ gonew github.com/roscrl/light
 
 ## Dependencies
 
-`html/template` server side rendered Go templates
-
 `tailwindcss` styling
 
 `@hotwired/turbo` SPA like navigation
@@ -28,7 +26,7 @@ gonew github.com/roscrl/light
 
 `sqlc` generate Go code from [SQL queries](core/db/query.sql)
 
-`is` testing assertions
+`is` test assertions
 
 `rod` browser testing
 
