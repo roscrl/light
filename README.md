@@ -1,8 +1,6 @@
 # light
 
-go template for a fullstack web app
-
-for those without [imaginary problems](https://cerebralab.com/Imaginary_Problems_Are_the_Root_of_Bad_Software)
+go template for a fullstack web app, for those without [imaginary problems](https://cerebralab.com/Imaginary_Problems_Are_the_Root_of_Bad_Software)
 
 ## Setup
 
