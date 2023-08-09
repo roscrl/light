@@ -1,0 +1,11 @@
+[Unit]
+Description=App
+
+[Service]
+ExecStart=/root/app/app
+WorkingDirectory=/root/app
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

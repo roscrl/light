@@ -2,7 +2,6 @@ package config
 
 import (
 	"bufio"
-	"embed"
 	"fmt"
 	"io/fs"
 	"log"
@@ -11,61 +10,74 @@ import (
 	"strings"
 )
 
-const PathConfigDevBrowser = "config/.dev.browser.mock"
+const (
+	Env     = "ENV"
+	Port    = "PORT"
+	Mocking = "MOCKING"
 
-//go:embed .prod
-var prodConfigFile embed.FS
+	SqliteDBPath = "SQLITE_DB_PATH"
+)
 
 type Server struct {
-	Env                    Environment
-	Port                   string
-	SqliteDBPath           string
-	Mocking                bool
-	SpotifyClientID        string
-	SpotifyClientSecret    string
-	NewRelicLicense        string
-	BasicDebugAuthUsername string
-	BasicDebugAuthPassword string
+	Port    string
+	Env     Environment
+	Mocking bool
+
+	SqliteDBPath string
 }
 
-func ProdEmbeddedConfig() *Server {
-	cfg, err := LoadConfig(prodConfigFile, ".prod")
+func (cfg *Server) MustValid() {
+	var issues []string
+
+	if cfg.Env == 0 {
+		issues = append(issues, "ENV is required")
+	}
+
+	if cfg.Port == "" {
+		issues = append(issues, "PORT is required")
+	}
+
+	if cfg.SqliteDBPath == "" {
+		issues = append(issues, "SQLITE_DB_PATH is required")
+	}
+
+	if len(issues) > 0 {
+		log.Fatalf("invalid server config: %s", strings.Join(issues, ", "))
+	}
+}
+
+func FromEnv() *Server {
+	env, err := parseEnvironment(os.Getenv(Env))
 	if err != nil {
-		log.Fatalf("failed to load embedded server config file: %v", err)
+		log.Fatalf("unknown environment in config dotfile file: %v", err)
+	}
+
+	return &Server{
+		Port:         os.Getenv(Port),
+		Env:          env,
+		Mocking:      os.Getenv(Mocking) == "true",
+		SqliteDBPath: os.Getenv(SqliteDBPath),
+	}
+}
+
+func TestConfig() *Server {
+	cfgPath := ".dev.test"
+
+	cfg, err := loadConfig(os.DirFS("./config"), cfgPath)
+	if err != nil {
+		log.Fatalf("error loading test server config file: %v", err)
 	}
 
 	return cfg
 }
 
-func DevConfig() *Server {
-	cfgPath := ".dev"
-
-	cfg, err := LoadConfig(os.DirFS("./config"), cfgPath)
-	if err != nil {
-		log.Fatalf("error loading dev server config file: %v", err)
-	}
-
-	return cfg
-}
-
-func MockConfig() *Server {
-	cfgPath := ".dev.mock"
-
-	cfg, err := LoadConfig(os.DirFS("./config"), cfgPath)
-	if err != nil {
-		log.Fatalf("error loading mock server config file: %v", err)
-	}
-
-	return cfg
-}
-
-func CustomConfig(cfgPath string) *Server {
+func FromCustomConfig(cfgPath string) *Server {
 	absPath, err := filepath.Abs(cfgPath)
 	if err != nil {
 		log.Fatalf("error resolving server config path: %v", err)
 	}
 
-	cfg, err := LoadConfig(os.DirFS(filepath.Dir(absPath)), filepath.Base(absPath))
+	cfg, err := loadConfig(os.DirFS(filepath.Dir(absPath)), filepath.Base(absPath))
 	if err != nil {
 		log.Fatalf("error loading custom server config file: %v", err)
 	}
@@ -73,7 +85,7 @@ func CustomConfig(cfgPath string) *Server {
 	return cfg
 }
 
-func LoadConfig(fsys fs.FS, filePath string) (*Server, error) {
+func loadConfig(fsys fs.FS, filePath string) (*Server, error) {
 	file, err := fsys.Open(filePath)
 	if err != nil {
 		return nil, err
@@ -99,29 +111,19 @@ func LoadConfig(fsys fs.FS, filePath string) (*Server, error) {
 		value := strings.TrimSpace(parts[1])
 
 		switch key {
-		case "ENVIRONMENT":
+		case Env:
 			env, err := parseEnvironment(value)
 			if err != nil {
 				return nil, fmt.Errorf("unknown environment in config dotfile file: %s = %s", key, value)
 			}
 
 			config.Env = env
-		case "PORT":
+		case Port:
 			config.Port = value
-		case "MOCK":
+		case Mocking:
 			config.Mocking = value == "true"
-		case "SQLITE_DB_PATH":
+		case SqliteDBPath:
 			config.SqliteDBPath = value
-		case "SPOTIFY_CLIENT_ID":
-			config.SpotifyClientID = value
-		case "SPOTIFY_CLIENT_SECRET":
-			config.SpotifyClientSecret = value
-		case "NEW_RELIC_LICENSE":
-			config.NewRelicLicense = value
-		case "BASIC_DEBUG_AUTH_USERNAME":
-			config.BasicDebugAuthUsername = value
-		case "BASIC_DEBUG_AUTH_PASSWORD":
-			config.BasicDebugAuthPassword = value
 		default:
 			return nil, fmt.Errorf("unknown key in config dotfile file: %s", key)
 		}

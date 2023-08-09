@@ -20,17 +20,19 @@ gonew github.com/roscrl/light
 
 `tailwindcss` styling
 
-`@hotwired/turbo` and `@hotwired/stimulus` for frontend JS, both vendored
+`@hotwired/turbo` SPA like navigation
 
-`go-sqlite3` as database driver (requires `zig cc` to compile x86 from ARM)
+`@hotwired/stimulus` lightweight JS functionality
 
-`sqlc` for generating Go code from [SQL queries](core/db/query.sql)
+`go-sqlite3` database driver (requires `zig cc` to compile x86 from ARM)
 
-`is` for assertions
+`sqlc` generate Go code from [SQL queries](core/db/query.sql)
 
-`fsnotify` for watching Go template changes in dev mode without recompiling
+`is` testing assertions
 
-`rod` for browser tests
+`rod` browser testing
+
+`fsnotify` watch Go template changes in dev mode without recompiling
 
 ## Deploy
 

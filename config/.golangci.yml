@@ -28,7 +28,6 @@ linters:
     - exhaustive
     - exportloopref
     - forbidigo
-    - gci
     - ginkgolinter
     - gocheckcompilerdirectives
     - goconst

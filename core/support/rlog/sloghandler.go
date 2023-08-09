@@ -2,9 +2,9 @@ package rlog
 
 import (
 	"context"
+	"log/slog"
 
-	"app/core/contextkey"
-	"golang.org/x/exp/slog"
+	"github.com/roscrl/light/core/support/contexthelp"
 )
 
 type ContextRequestHandler struct {
@@ -14,20 +14,15 @@ type ContextRequestHandler struct {
 const (
 	RequestPathLogKey = "request_path"
 	RequestIDLogKey   = "request_id"
-	SessionIDLogKey   = "session_id"
 )
 
 func (h ContextRequestHandler) Handle(ctx context.Context, record slog.Record) error {
-	if path, ok := ctx.Value(contextkey.RequestPath{}).(string); ok {
+	if path, ok := ctx.Value(contexthelp.RequestPathKey{}).(string); ok {
 		record.AddAttrs(slog.String(RequestPathLogKey, path))
 	}
 
-	if rid, ok := ctx.Value(contextkey.RequestID{}).(string); ok {
+	if rid, ok := ctx.Value(contexthelp.RequestIDKey{}).(string); ok {
 		record.AddAttrs(slog.String(RequestIDLogKey, rid))
-	}
-
-	if sid, ok := ctx.Value(contextkey.SessionID{}).(string); ok {
-		record.AddAttrs(slog.String(SessionIDLogKey, sid))
 	}
 
 	return h.Handler.Handle(ctx, record)

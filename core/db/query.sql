@@ -1,33 +1,13 @@
--- name: AddPlaylist :execresult
-INSERT INTO playlists (id, upvotes)
-VALUES (?, ?);
+-- name: CreateTodo :execresult
+INSERT INTO todos (id, task, status)
+VALUES (?, ?, ?);
 
--- name: GetPlaylistUpvotes :one
-SELECT upvotes
-FROM playlists
-WHERE id = ?;
+-- name: GetTodos :many
+SELECT id, task, status, created_at
+FROM todos
+ORDER BY created_at DESC;
 
--- name: PlaylistExists :one
-SELECT EXISTS(SELECT 1 FROM playlists WHERE id = ?);
-
--- name: GetTopPlaylists :many
-SELECT id, upvotes, added_at
-FROM playlists
-ORDER BY upvotes DESC, id DESC
-LIMIT ?;
-
---! Manually added GetNextTopPlaylists to db/sqlc/query.sql.manual.go due to not working in sqlc
-
--- name: GetNewPlaylists :many
-SELECT id, upvotes, added_at
-FROM playlists
-ORDER BY added_at DESC, id DESC
-LIMIT ?;
-
---! Manually added GetNextNewPlaylists to db/sqlc/query.sql.manual.go due to not working in sqlc
-
--- name: IncrementPlaylistUpvotes :one
-UPDATE playlists
-SET upvotes = upvotes + 1
+-- name: SetTodoStatus :execresult
+UPDATE todos
+SET status = ?
 WHERE id = ?
-RETURNING upvotes;

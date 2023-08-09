@@ -2,18 +2,19 @@ package rlog
 
 import (
 	"context"
+	"log/slog"
 	"os"
 
-	"app/core/contextkey"
-	"golang.org/x/exp/slog"
+	"github.com/roscrl/light/core/support/contexthelp"
 )
 
-func L(ctx context.Context) *slog.Logger {
-	if logger, ok := ctx.Value(contextkey.RequestLogger{}).(*slog.Logger); ok {
-		return logger
+// L returns the logger from the context along with given context or a default logger and the given context.
+func L(ctx context.Context) (*slog.Logger, context.Context) {
+	if logger, ok := ctx.Value(contexthelp.RequestLogger{}).(*slog.Logger); ok {
+		return logger, ctx
 	}
 
-	return NewDefaultLogger()
+	return NewDefaultLogger(), ctx
 }
 
 func NewDefaultLogger() *slog.Logger {

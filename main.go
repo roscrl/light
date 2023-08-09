@@ -2,26 +2,26 @@ package main
 
 import (
 	"flag"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"app/config"
-	"app/core"
-	"golang.org/x/exp/slog"
+	"github.com/roscrl/light/config"
+	"github.com/roscrl/light/core"
 )
 
 func main() {
 	var configPath string
 
-	flag.StringVar(&configPath, "config", "USE_EMBEDDED_PROD_CONFIG", "file path to server config file otherwise use the embedded prod config")
+	flag.StringVar(&configPath, "config", "USE_ENVIRONMENT", "file path to server config file otherwise use environment variables")
 	flag.Parse()
 
 	var cfg *config.Server
-	if configPath == "USE_EMBEDDED_PROD_CONFIG" {
-		cfg = config.ProdEmbeddedConfig()
+	if configPath == "USE_ENVIRONMENT" {
+		cfg = config.FromEnv()
 	} else {
-		cfg = config.CustomConfig(configPath)
+		cfg = config.FromCustomConfig(configPath)
 	}
 
 	srv := core.NewServer(cfg)

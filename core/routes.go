@@ -4,8 +4,10 @@ import (
 	"net/http"
 	"regexp"
 
-	"app/core/middleware"
+	"github.com/roscrl/light/core/middleware"
 )
+
+type contextKeyFields struct{}
 
 type route struct {
 	method  string
@@ -17,20 +19,10 @@ const (
 	RouteAssetBase = "/assets"
 	RouteAsset     = "/assets/(.*)"
 
-	RouteHome                   = "/"
-	RouteHomeNew                = "/new"
-	RoutePlaylistBase           = "/playlist"
-	RoutePlaylistCreate         = "/playlist"
-	RoutePlaylistsPaginationTop = "/playlists/top(.*)"
-	RoutePlaylistsPaginationNew = "/playlists/new(.*)"
+	RouteHome       = "/"
+	RouteTodoCreate = "/todo/create"
 
-	RoutePlaylistView   = "/playlist/(.*)"
-	RoutePlaylistUpvote = "/playlist/(.*)/upvote"
-
-	RoutePlaylistsUpvotesSubscribe = "/playlists/subscribe/upvotes"
-	RoutePlaylistsUpvotesStream    = "/playlists/stream/upvotes"
-
-	RouteUp                  = "/up"
+	RouteUp                  = "/health"
 	RouteProfileBaseRoute    = "/debug/pprof"
 	RouteProfileAllocs       = "/debug/allocs"
 	RouteProfileBlock        = "/debug/block"
@@ -44,63 +36,46 @@ const (
 	RouteProfileTrace        = "/debug/trace"
 )
 
-type contextKeyFields struct{}
-
 func (s *Server) routes() http.Handler {
 	newRoute := func(method, pattern string, handler http.HandlerFunc) route {
 		return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
 	}
 
 	routes := []route{
-		newRoute(http.MethodGet, RouteAsset, http.StripPrefix(RouteAssetBase+"/", s.handleAssets()).ServeHTTP),
-		newRoute(http.MethodGet, RouteHome, s.handleHomeTop()),
-		newRoute(http.MethodGet, RouteHomeNew, s.handleHomeNew()),
+		newRoute(http.MethodGet, RouteAsset, s.handleAssets()),
+		newRoute(http.MethodGet, RouteHome, s.handleHome()),
+		newRoute(http.MethodPost, RouteTodoCreate, s.handleTodoCreate()),
 
-		newRoute(http.MethodPost, RoutePlaylistsUpvotesSubscribe, s.handlePlaylistUpvotesSubscribe()),
-		newRoute(http.MethodGet, RoutePlaylistsUpvotesStream, s.handlePlaylistsUpvotesStream()),
-
-		newRoute(http.MethodPost, RoutePlaylistCreate, s.handlePlaylistCreate()),
-
-		newRoute(http.MethodGet, RoutePlaylistsPaginationTop, s.handlePlaylistsPaginationTop()),
-		newRoute(http.MethodGet, RoutePlaylistsPaginationNew, s.handlePlaylistsPaginationNew()),
-
-		newRoute(http.MethodGet, RoutePlaylistView, s.handlePlaylistView()),
-		newRoute(http.MethodPost, RoutePlaylistUpvote, s.handlePlaylistUpVote()),
-
-		newRoute(http.MethodGet, RouteUp, s.handleUp()),
+		newRoute(http.MethodGet, RouteUp, s.handleHealth()),
 	}
 
-	pprofRoutes := map[string]http.HandlerFunc{
-		RouteProfileBaseRoute:    s.handleIndex(),
-		RouteProfileAllocs:       s.handleAllocs(),
-		RouteProfileBlock:        s.handleBlock(),
-		RouteProfileCmdline:      s.handleCmdline(),
-		RouteProfileGoroutine:    s.handleGoroutine(),
-		RouteProfileHeap:         s.handleHeap(),
-		RouteProfileMutex:        s.handleMutex(),
-		RouteProfileProfile:      s.handleProfile(),
-		RouteProfileThreadcreate: s.handleThreadcreate(),
-		RouteProfileSymbol:       s.handleSymbol(),
-		RouteProfileTrace:        s.handleTrace(),
-	}
+	{
+		pprofRoutes := []route{
+			newRoute(http.MethodGet, RouteProfileBaseRoute, s.handleIndex()),
+			newRoute(http.MethodGet, RouteProfileAllocs, s.handleAllocs()),
+			newRoute(http.MethodGet, RouteProfileBlock, s.handleBlock()),
+			newRoute(http.MethodGet, RouteProfileCmdline, s.handleCmdline()),
+			newRoute(http.MethodGet, RouteProfileGoroutine, s.handleGoroutine()),
+			newRoute(http.MethodGet, RouteProfileHeap, s.handleHeap()),
+			newRoute(http.MethodGet, RouteProfileMutex, s.handleMutex()),
+			newRoute(http.MethodGet, RouteProfileProfile, s.handleProfile()),
+			newRoute(http.MethodGet, RouteProfileThreadcreate, s.handleThreadcreate()),
+			newRoute(http.MethodGet, RouteProfileSymbol, s.handleSymbol()),
+			newRoute(http.MethodGet, RouteProfileTrace, s.handleTrace()),
+		}
 
-	for path, handler := range pprofRoutes {
-		routes = append(routes, newRoute(http.MethodGet, path, middleware.BasicAuthAdmin(handler, s.Cfg.BasicDebugAuthUsername, s.Cfg.BasicDebugAuthPassword)))
+		routes = append(routes, pprofRoutes...)
 	}
-
-	instrumentRoutes(routes, s.APM)
 
 	routerEntry := s.routing(routes)
 
 	return middleware.RequestLogger(
-		middleware.RequestPathToContext(
+		middleware.RequestPath(
 			middleware.RequestID(
 				middleware.Recovery(
-					middleware.CookieSession(
-						middleware.RequestDuration(
-							routerEntry, RouteAssetBase,
-						),
-					), noticeError,
+					middleware.RequestDuration(
+						routerEntry, RouteAssetBase,
+					),
 				),
 			), RouteAssetBase,
 		),

@@ -12,14 +12,14 @@ import (
 )
 
 const (
-	PlaylistsTable = "playlists"
+	TodosTable = "todos"
 )
 
-var MigrationsPath = ""
+var PathMigrations = ""
 
 func init() {
 	_, filename, _, _ := runtime.Caller(0)
-	MigrationsPath = filepath.Dir(filename) + "/migrations"
+	PathMigrations = filepath.Dir(filename) + "/migrations"
 }
 
 func New(dataSource string) *sql.DB {
@@ -36,15 +36,15 @@ func New(dataSource string) *sql.DB {
 	return db
 }
 
-func RunMigrations(db *sql.DB, migrationsPath string) {
-	migrationsDir, err := os.ReadDir(migrationsPath)
+func RunMigrations(db *sql.DB, pathMigrations string) {
+	migrationsDir, err := os.ReadDir(pathMigrations)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, file := range migrationsDir {
 		if strings.HasSuffix(file.Name(), ".sql") {
-			migration, err := os.ReadFile(migrationsPath + "/" + file.Name())
+			migration, err := os.ReadFile(pathMigrations + "/" + file.Name())
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -54,20 +54,6 @@ func RunMigrations(db *sql.DB, migrationsPath string) {
 				log.Fatal(err)
 			}
 		}
-	}
-}
-
-func SeedTestData(db *sql.DB) {
-	_, err := db.Exec(`INSERT INTO playlists (id, upvotes, added_at) VALUES 
-                                                  ('6', 10, 1620000000), 
-                                                  ('5', 9, 1620000000), 
-                                                  ('4', 9, 1620000000), 
-                                                  ('3', 8, 1620000000), 
-                                                  ('2', 8, 1620000000), 
-                                                  ('1', 6, 1620000000), 
-                                                  ('0', 5, 1620000000)`)
-	if err != nil {
-		log.Fatal(err)
 	}
 }
 

@@ -13,7 +13,8 @@ import (
 	"runtime"
 	"strings"
 
-	"app/config"
+	"github.com/roscrl/light/config"
+
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -109,7 +110,7 @@ func (v *Views) Render(w io.Writer, name string, data any) {
 	}
 }
 
-func (v *Views) RenderStandardError(w http.ResponseWriter) {
+func (v *Views) RenderDefaultError(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusInternalServerError)
 	v.Render(w, "error.tmpl", map[string]any{})
 }

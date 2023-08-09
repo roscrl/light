@@ -1,4 +1,3 @@
-//nolint:gomnd
 package core
 
 import (
@@ -6,36 +5,29 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"time"
 
-	"app/config"
-	"app/core/broadcast"
-	"app/core/db"
-	"app/core/db/sqlc"
-	"app/core/rlog"
-	"app/core/session"
-	"app/core/spotify"
-	"app/core/views"
-	"github.com/newrelic/go-agent/v3/newrelic"
-	"golang.org/x/exp/slog"
+	"github.com/roscrl/light/config"
+	"github.com/roscrl/light/core/db"
+	"github.com/roscrl/light/core/db/sqlc"
+	"github.com/roscrl/light/core/support/rlog"
+	"github.com/roscrl/light/core/views"
 )
 
 type Server struct {
-	Cfg   *config.Server
-	Log   *slog.Logger
-	DB    *sql.DB
-	Qry   *sqlc.Queries
+	Cfg *config.Server
+	Log *slog.Logger
+
+	DB  *sql.DB
+	Qry *sqlc.Queries
+
 	Views *views.Views
 
-	Client  *http.Client
-	Spotify *spotify.Client
+	Client *http.Client
 
-	SessionStore             *session.Store
-	UpvoteBroadcasterService *broadcast.UpvoteBroadcasterService
-
-	APM      *newrelic.Application
 	Router   http.Handler
 	Listener net.Listener
 	Port     string
@@ -43,6 +35,7 @@ type Server struct {
 	HTTPServer *http.Server
 }
 
+//nolint:gomnd
 func NewServer(cfg *config.Server) *Server {
 	srv := &Server{}
 
@@ -58,14 +51,13 @@ func NewServer(cfg *config.Server) *Server {
 
 	setupServices(srv)
 
-	srv.APM = newAPM(srv.Cfg.Env.String(), srv.Cfg.NewRelicLicense)
 	srv.Router = srv.routes()
 
 	srv.HTTPServer = &http.Server{
-		Handler:     srv.Router,
-		ReadTimeout: 5 * time.Second,
-		// WriteTimeout: 10 * time.Second, TODO this is causing issues with the websocket
-		IdleTimeout: 15 * time.Second,
+		Handler:      srv.Router,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  15 * time.Second,
 	}
 
 	return srv
@@ -108,8 +100,6 @@ func (s *Server) Stop() {
 	if err := s.Listener.Close(); err != nil {
 		log.Fatalf("failed to shutdown: %v", err)
 	}
-
-	s.Spotify.StopTokenLifecycle()
 
 	err := s.DB.Close()
 	if err != nil {

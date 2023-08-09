@@ -6,8 +6,9 @@ package sqlc
 
 import ()
 
-type Playlist struct {
-	ID      string
-	Upvotes int64
-	AddedAt int64
+type Todo struct {
+	ID        string
+	Task      string
+	Status    string
+	CreatedAt int64
 }

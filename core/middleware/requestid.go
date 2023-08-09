@@ -6,22 +6,24 @@ import (
 	"fmt"
 	"net/http"
 
-	"app/core/contextkey"
+	"github.com/roscrl/light/core/support/contexthelp"
 )
 
 func RequestID(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+	const requestIDSize = 8
 
-		bytes := make([]byte, 8) //nolint:gomnd // 8 bytes = 64 bits = 16 hex characters
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rctx := r.Context()
+
+		bytes := make([]byte, requestIDSize)
 		if _, err := rand.Read(bytes); err != nil {
 			bytes = []byte("00000000")
 		}
 
 		requestID := fmt.Sprintf("%X", bytes)
 
-		ctx = context.WithValue(ctx, contextkey.RequestID{}, requestID)
+		rctx = context.WithValue(rctx, contexthelp.RequestIDKey{}, requestID)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r.WithContext(rctx))
 	})
 }

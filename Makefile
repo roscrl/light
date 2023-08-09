@@ -1,40 +1,38 @@
 #########################
-##  Local Development  ##
+##     Development     ##
 #########################
 
 lint:
 	golangci-lint run --config config/.golangci.yml
 
-run-mock:
-	go run . --config ./config/.dev.mock
+format:
+	gofumpt -l -w .
 
-hotreload-mock:
-	air -c ./config/.air.mock.toml & make tailwind-watch
+sqlc:
+	cd ./core/db && sqlc generate
 
-run:
-	go run . --config ./config/.dev
-
-hotreload:
-	air -c ./config/.air.toml & make tailwind-watch
-
-tailwind-watch:
-	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --watch --config ./config/tailwind.config.js
-
-generate:
+generate: sqlc
 	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --config ./config/tailwind.config.js
 	./bin/esbuild core/views/assets/dist/js/vendor/stimulus-3.2.1/stimulus.js --minify --outfile=core/views/assets/dist/js/vendor/stimulus-3.2.1/stimulus.min.js
 	./bin/esbuild core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.js --minify --outfile=core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.min.js
-	cd ./core/db && sqlc generate
 
-format:
-	gofumpt -l -w . && gci write -s standard -s default ./..
-
-.PHONY: test
 test:
 	go test -v ./...
 
 test-browser-slow:
 	go test -v ./... -rod=show,slow=1s,trace
+
+run:
+	go run . --config ./config/.dev
+
+run-mock:
+	go run . --config ./config/.dev.mock
+
+output-schema:
+	sqlite3 ./core/db/app.db .schema > ./core/db/schema.sql
+
+tailwind-watch:
+	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --watch --config ./config/tailwind.config.js
 
 bench:
 	go test -run=^$ -bench=. ./...
@@ -43,24 +41,19 @@ pprof:
 	go tool pprof -http=:8080 bin/profile.pprof
 
 #########################
-#####    Scripts    #####
-#########################
-
-generate-mock-playlists:
-	go run scripts/generatemockplaylists.go
-
-#########################
 #####    Builds     #####
 #########################
 
-build: generate format lint test
-	go build -o bin/app .
+pre-build: lint format generate test
 
-build-amd64: generate format lint test
+build-amd64-linux: pre-build
 	CC="zig cc -target x86_64-linux-musl" CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o bin/app .
 
-build-arm64: generate format lint test
+build-arm64-linux: pre-build
 	CC="zig cc -target aarch64-linux-musl" CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -o bin/app .
+
+build: pre-build
+	go build -o bin/app .
 
 build-quick:
 	go build -o bin/app .
@@ -71,7 +64,7 @@ build-quick:
 
 USER=root
 
-APP_NAME=playlistvote
+APP_NAME=app
 APP_FOLDER=~/$(APP_NAME)
 
 APP_CADDY_PATH=$(APP_NAME).caddy
@@ -104,25 +97,25 @@ vps-dependencies:
 caddy-root-config:
 	scp -r ./config/Caddyfile $(USER)@$(VPS_IP):/etc/caddy/Caddyfile
 
-caddy-service-reload:
-	scp -r ./config/caddy.service $(USER)@$(VPS_IP):/lib/systemd/system/caddy.service
-	ssh $(USER)@$(VPS_IP) "systemctl daemon-reload"
-	ssh $(USER)@$(VPS_IP) "systemctl restart caddy"
-
 caddy-cert:
 	scp -r ./config/public.pem $(USER)@$(VPS_IP):/etc/ssl/certs/$(APP_NAME).pem
 	ssh $(USER)@$(VPS_IP) "mkdir -p /etc/ssl/private"
 	scp -r ./config/private.pem $(USER)@$(VPS_IP):/etc/ssl/private/$(APP_NAME).pem
 
+caddy-service-reload:
+	scp -r ./config/caddy.service $(USER)@$(VPS_IP):/lib/systemd/system/caddy.service
+	ssh $(USER)@$(VPS_IP) "systemctl daemon-reload"
+	ssh $(USER)@$(VPS_IP) "systemctl restart caddy"
+
 caddy-reload:
 	scp -r ./config/$(APP_CADDY_PATH) $(USER)@$(VPS_IP):/etc/caddy/$(APP_CADDY_PATH)
 	ssh $(USER)@$(VPS_IP) "systemctl reload caddy"
 
-db-copy-prod:
-	rsync -avz --ignore-existing $(USER)@$(VPS_IP):$(APP_FOLDER)/db/ $(LOCAL_SQLITE_DB_PATH).prod
-
 db-copy-over:
 	rsync -avz --ignore-existing $(LOCAL_SQLITE_DB_PATH) $(USER)@$(VPS_IP):$(APP_FOLDER)/db/
+
+db-copy-prod:
+	rsync -avz --ignore-existing $(USER)@$(VPS_IP):$(APP_FOLDER)/db/ $(LOCAL_SQLITE_DB_PATH).prod
 
 db-copy-over-force:
 	ssh $(USER)@$(VPS_IP) "mkdir -p $(APP_FOLDER)/db/archive"
@@ -166,26 +159,23 @@ logs-caddy-prod:
 	ssh $(USER)@$(VPS_IP) "journalctl -u caddy -f"
 
 #########################
-#####    Tooling    #####
+##    Tools Install    ##
 #########################
 
 tools:
-	go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.18.0
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.2
 	go install mvdan.cc/gofumpt@v0.5.0
-	go install github.com/daixiang0/gci@v0.10.1
-	go install github.com/cosmtrek/air@v1.43.0
-	mkdir -p ./bin/
-	make tooling-esbuild
-	make tooling-tailwind
+	go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.19.1
+	make tools-esbuild
+	make tools-tailwind
 	echo "Remember to install Zig for the built-in C cross-compiler to Linux (or any C compiler for the 'make build' targets)"
 
-tooling-esbuild:
+tools-esbuild:
 	curl -fsSL https://esbuild.github.io/dl/v0.17.17 | sh
 	mv esbuild ./bin/
 
 # MacOS ARM specific
-tooling-tailwind:
+tools-tailwind:
 	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.2/tailwindcss-macos-arm64
 	chmod +x tailwindcss-macos-arm64
 	mv tailwindcss-macos-arm64 tailwindcss

@@ -1,15 +1,14 @@
 package middleware
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 
-	"app/core/contextkey"
-	"app/core/rlog"
+	"github.com/roscrl/light/core/support/contexthelp"
+	"github.com/roscrl/light/core/support/rlog"
 )
 
-func Recovery(next http.Handler, noticeError func(context.Context, error)) http.Handler {
+func Recovery(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if recovery := recover(); recovery != nil {
@@ -23,13 +22,11 @@ func Recovery(next http.Handler, noticeError func(context.Context, error)) http.
 					err = fmt.Errorf("unknown panic: %v", panicType)
 				}
 
-				log := rlog.L(r.Context())
-				log.ErrorCtx(r.Context(), "panic", "err", err)
-
-				noticeError(r.Context(), err)
+				log, rctx := rlog.L(r.Context())
+				log.ErrorContext(rctx, "panic", "err", err)
 
 				var requestID string
-				if rid, ok := r.Context().Value(contextkey.RequestID{}).(string); ok {
+				if rid, ok := r.Context().Value(contexthelp.RequestIDKey{}).(string); ok {
 					requestID = rid
 				}
 

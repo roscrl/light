@@ -2,25 +2,25 @@ package middleware
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"os"
 
-	"app/core/contextkey"
-	"app/core/rlog"
-	"golang.org/x/exp/slog"
+	"github.com/roscrl/light/core/support/contexthelp"
+	"github.com/roscrl/light/core/support/rlog"
 )
 
 func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
+		rctx := r.Context()
 
 		textHandler := slog.NewTextHandler(os.Stdout, nil)
 		requestContextHandler := rlog.ContextRequestHandler{Handler: textHandler}
 
 		logger := slog.New(requestContextHandler)
 
-		ctx = context.WithValue(ctx, contextkey.RequestLogger{}, logger)
+		rctx = context.WithValue(rctx, contexthelp.RequestLoggerKey{}, logger)
 
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r.WithContext(rctx))
 	})
 }
