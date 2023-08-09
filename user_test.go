@@ -18,7 +18,7 @@ func TestUser(t *testing.T) {
 	browser := rod.New().MustConnect()
 	defer browser.MustClose()
 
-	page := browser.MustPage("http://localhost:" + s.Port)
+	page := browser.MustPage("http://localhost:" + s.Cfg.Port)
 
 	wait := page.MustWaitNavigation()
 	page.MustElement("#playlist_list > div:nth-child(4) > a").MustClick()
