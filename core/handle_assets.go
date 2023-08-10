@@ -1,16 +1,12 @@
 package core
 
 import (
-	"embed"
 	"io/fs"
 	"log"
 	"net/http"
 
 	"github.com/roscrl/light/config"
 )
-
-//go:embed views/assets/dist
-var assetsFS embed.FS
 
 const (
 	PathAssets         = "core/views/assets/dist"
@@ -25,7 +21,7 @@ func (s *Server) handleAssets() http.HandlerFunc {
 		return handler.ServeHTTP
 	}
 
-	subFS, err := fs.Sub(assetsFS, PathEmbeddedAssets)
+	subFS, err := fs.Sub(s.Cfg.FrontendAssetsFS, PathEmbeddedAssets)
 	if err != nil {
 		log.Fatal(err)
 	}

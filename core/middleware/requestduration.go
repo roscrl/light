@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/roscrl/light/core/support/rlog/key"
 	"net/http"
 	"strings"
 	"time"
@@ -23,6 +24,6 @@ func RequestDuration(next http.Handler, ignorePath string) http.Handler {
 		elapsed := time.Since(start)
 
 		log, rctx := rlog.L(r.Context())
-		log.InfoContext(rctx, "request duration", "took", elapsed)
+		log.InfoContext(rctx, "request duration", key.Took, elapsed)
 	})
 }

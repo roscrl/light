@@ -7,14 +7,6 @@ import (
 	"github.com/roscrl/light/core/middleware"
 )
 
-type contextKeyFields struct{}
-
-type route struct {
-	method  string
-	regex   *regexp.Regexp
-	handler http.HandlerFunc
-}
-
 const (
 	RouteAssetBase = "/assets"
 	RouteAsset     = "/assets/(.*)"
@@ -36,6 +28,14 @@ const (
 	RouteProfileTrace        = "/debug/trace"
 )
 
+type route struct {
+	method  string
+	regex   *regexp.Regexp
+	handler http.HandlerFunc
+}
+
+type contextKeyFields struct{}
+
 func (s *Server) routes() http.Handler {
 	newRoute := func(method, pattern string, handler http.HandlerFunc) route {
 		return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
@@ -43,6 +43,7 @@ func (s *Server) routes() http.Handler {
 
 	routes := []route{
 		newRoute(http.MethodGet, RouteAsset, s.handleAssets()),
+
 		newRoute(http.MethodGet, RouteHome, s.handleHome()),
 		newRoute(http.MethodPost, RouteTodoCreate, s.handleTodoCreate()),
 

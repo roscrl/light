@@ -75,7 +75,7 @@ LOCAL_SQLITE_DB_PATH=./core/db/$(DB_NAME).db
 LOCAL_SQLITE_SHM_DB_PATH=./core/db/$(DB_NAME).db-shm
 LOCAL_SQLITE_WAL_DB_PATH=./core/db/$(DB_NAME).db-wal
 
-CLOUDFLARE_ZONE_ID=3849d0e239cfff8040f0dceaf0071e4a
+CLOUDFLARE_ZONE_ID=CHANGE_ME
 
 ssh:
 	ssh $(USER)@$(VPS_IP)
@@ -87,7 +87,7 @@ vps-new:
 	make caddy-cert
 	make caddy-service-reload
 	make caddy-reload
-	make db-copy-over
+	make db-copy-to-prod
 	make app-service-reload
 	make deploy
 
@@ -111,12 +111,13 @@ caddy-reload:
 	scp -r ./config/$(APP_CADDY_PATH) $(USER)@$(VPS_IP):/etc/caddy/$(APP_CADDY_PATH)
 	ssh $(USER)@$(VPS_IP) "systemctl reload caddy"
 
-db-copy-over:
+db-copy-local-to-prod:
+	rsync -avz --ignore-existing $(LOCAL_SQLITE_DB_PATH) $(USER)@$(VPS_IP):$(APP_FOLDER)/db/
 
-db-copy-prod:
+db-copy-prod-to-local:
 	rsync -avz --ignore-existing $(USER)@$(VPS_IP):$(APP_FOLDER)/db/ $(LOCAL_SQLITE_DB_PATH).prod
 
-db-copy-over-force:
+db-copy-local-to-prod-force:
 	ssh $(USER)@$(VPS_IP) "mkdir -p $(APP_FOLDER)/db/archive"
 	ssh $(USER)@$(VPS_IP) "if [ -f $(APP_FOLDER)/db/$(DB_NAME).db ];     then mv $(APP_FOLDER)/db/$(DB_NAME).db     $(APP_FOLDER)/db/archive/$(DB_NAME)_$$(date +"%Y%m%d%H%M%S").db;     fi"
 	ssh $(USER)@$(VPS_IP) "if [ -f $(APP_FOLDER)/db/$(DB_NAME).db-shm ]; then mv $(APP_FOLDER)/db/$(DB_NAME).db-shm $(APP_FOLDER)/db/archive/$(DB_NAME)_$$(date +"%Y%m%d%H%M%S").db-shm; fi"
@@ -162,7 +163,7 @@ logs-caddy-prod:
 #########################
 
 tools:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.53.2
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.0
 	go install mvdan.cc/gofumpt@v0.5.0
 	go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.19.1
 	mkdir -p ./bin/
@@ -174,8 +175,8 @@ tools-esbuild:
 	curl -fsSL https://esbuild.github.io/dl/v0.17.17 | sh
 	mv esbuild ./bin/
 
-# MacOS ARM specific
 tools-tailwind:
+	# MacOS ARM specific
 	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.2/tailwindcss-macos-arm64
 	chmod +x tailwindcss-macos-arm64
 	mv tailwindcss-macos-arm64 tailwindcss

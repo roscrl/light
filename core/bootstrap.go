@@ -1,13 +1,17 @@
 package core
 
 import (
+	"embed"
 	"flag"
-	"github.com/roscrl/light/config"
-	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/roscrl/light/config"
 )
+
+//go:embed views/assets/dist
+var frontendAssets embed.FS
 
 func Bootstrap() {
 	var configPath string
@@ -22,8 +26,10 @@ func Bootstrap() {
 		cfg = config.FromCustomConfig(configPath)
 	}
 
+	cfg.FrontendAssetsFS = frontendAssets
+	cfg.MustValidate()
+
 	srv := NewServer(cfg)
-	slog.SetDefault(srv.Log)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)

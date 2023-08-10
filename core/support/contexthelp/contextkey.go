@@ -2,8 +2,6 @@ package contexthelp
 
 import "net/http"
 
-type RequestLogger struct{}
-
 type (
 	RequestLoggerKey struct{}
 	RequestIDKey     struct{}

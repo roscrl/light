@@ -29,7 +29,7 @@ func BenchmarkNewLoggerEveryRequest(b *testing.B) {
 		textHandler := slog.NewTextHandler(os.Stdout, nil)
 		requestContextHandler := ContextRequestHandler{Handler: textHandler}
 
-		logger = slog.New(requestContextHandler)
+		logger = slog.New(&requestContextHandler)
 
 		ctx = context.WithValue(ctx, contexthelp.RequestLoggerKey{}, logger)
 		ctx = context.WithValue(ctx, contexthelp.RequestIDKey{}, requestID)
@@ -49,7 +49,7 @@ func BenchmarkCloningWithLoggerEveryRequest(b *testing.B) {
 
 	textHandler := slog.NewTextHandler(os.Stdout, nil)
 	requestContextHandler := ContextRequestHandler{Handler: textHandler}
-	logger = slog.New(requestContextHandler)
+	logger = slog.New(&requestContextHandler)
 
 	for i := 0; i < b.N; i++ {
 		ctx = context.Background()

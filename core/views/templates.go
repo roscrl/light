@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 
 	"github.com/roscrl/light/config"
@@ -25,13 +24,6 @@ const (
 	PathTemplates = "core/views/" + DirTemplate
 	PathViews     = "core/views"
 )
-
-var PathConfigDevBrowser = ""
-
-func init() {
-	_, filename, _, _ := runtime.Caller(0)
-	PathConfigDevBrowser = filepath.Dir(filename) + "/.dev.browser.mock"
-}
 
 //go:embed templates/*.tmpl templates/**/*.tmpl
 var tmplFS embed.FS

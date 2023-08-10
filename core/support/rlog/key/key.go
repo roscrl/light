@@ -2,5 +2,6 @@ package key
 
 const (
 	Err  = "error"
-	BRID = "brid"
+	Test = "test"
+	Took = "took"
 )

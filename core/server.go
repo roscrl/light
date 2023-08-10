@@ -41,8 +41,11 @@ func NewServer(cfg *config.Server) *Server {
 
 	srv.Cfg = cfg
 	srv.Log = rlog.NewDefaultLogger()
+	slog.SetDefault(srv.Log)
+
 	srv.DB = db.New(cfg.SqliteDBPath)
 	srv.Qry = sqlc.New(srv.DB)
+
 	srv.Views = views.New(srv.Cfg.Env)
 
 	srv.Client = &http.Client{

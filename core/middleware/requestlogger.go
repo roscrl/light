@@ -15,9 +15,11 @@ func RequestLogger(next http.Handler) http.Handler {
 		rctx := r.Context()
 
 		textHandler := slog.NewTextHandler(os.Stdout, nil)
-		requestContextHandler := rlog.ContextRequestHandler{Handler: textHandler}
+		requestContextHandler := rlog.ContextRequestHandler{
+			Handler: textHandler,
+		}
 
-		logger := slog.New(requestContextHandler)
+		logger := slog.New(&requestContextHandler)
 
 		rctx = context.WithValue(rctx, contexthelp.RequestLoggerKey{}, logger)
 

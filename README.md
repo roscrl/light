@@ -12,6 +12,10 @@ go install golang.org/x/tools/cmd/gonew@latest
 gonew github.com/roscrl/light
 ```
 
+### Config
+
+Search for `CHANGE_ME` in the codebase and replace with your own values
+
 ## Dependencies
 
 `tailwindcss` styling

@@ -24,14 +24,12 @@ type Server struct {
 	Mocking bool
 
 	SqliteDBPath string
+
+	FrontendAssetsFS fs.FS
 }
 
-func (cfg *Server) MustValid() {
+func (cfg *Server) MustValidate() {
 	var issues []string
-
-	if cfg.Env == 0 {
-		issues = append(issues, "ENV is required")
-	}
 
 	if cfg.Port == "" {
 		issues = append(issues, "PORT is required")
@@ -39,6 +37,10 @@ func (cfg *Server) MustValid() {
 
 	if cfg.SqliteDBPath == "" {
 		issues = append(issues, "SQLITE_DB_PATH is required")
+	}
+
+	if cfg.FrontendAssetsFS == nil {
+		issues = append(issues, "FrontendAssetsFS is required")
 	}
 
 	if len(issues) > 0 {
