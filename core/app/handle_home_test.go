@@ -1,10 +1,11 @@
 package app
 
 import (
-	"github.com/roscrl/light/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/roscrl/light/config"
 )
 
 func TestHandleHome(t *testing.T) {
