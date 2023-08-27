@@ -1,7 +1,11 @@
 package key
 
 const (
+	Todo = "todo"
+
 	Err  = "error"
-	Test = "test"
 	Took = "took"
+
+	Env = "env"
+	DB  = "db"
 )

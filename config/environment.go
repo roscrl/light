@@ -7,12 +7,15 @@ import (
 type Environment int
 
 const (
-	DEV Environment = iota
+	LOCAL Environment = iota
+	DEV
 	PROD
 )
 
 func (e Environment) String() string {
 	switch e {
+	case LOCAL:
+		return "LOCAL"
 	case DEV:
 		return "DEV"
 	case PROD:
@@ -24,6 +27,8 @@ func (e Environment) String() string {
 
 func parseEnvironment(value string) (Environment, error) {
 	switch value {
+	case "LOCAL":
+		return LOCAL, nil
 	case "DEV":
 		return DEV, nil
 	case "PROD":

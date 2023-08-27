@@ -1,0 +1,5 @@
+PORT=8080
+
+ENV=LOCAL
+SQLITE_DB_PATH=./core/db/app.db
+MOCKING=false

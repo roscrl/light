@@ -1,5 +1,5 @@
 const Routes = {
-    TodoCreate: "/todo/create"
+    TodoCreate: "/todos/create"
 }
 
 export { Routes }

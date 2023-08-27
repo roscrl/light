@@ -1,7 +1,7 @@
 www.CHANGE_ME.com CHANGE_ME.com {
     tls /etc/ssl/certs/app.pem /etc/ssl/private/app.pem
 
-    reverse_proxy localhost:3000 {
+    reverse_proxy localhost:8080 {
         flush_interval -1
     }
 

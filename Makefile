@@ -2,34 +2,46 @@
 ##     Development     ##
 #########################
 
+DB_NAME=$(APP_NAME)
+DB_FOLDER=./core/db
+LOCAL_SQLITE_SCHEMA=$(DB_FOLDER)/schema.sql
+LOCAL_SQLITE_DB_PATH=$(DB_FOLDER)/$(DB_NAME).db
+LOCAL_SQLITE_SHM_DB_PATH=$(DB_FOLDER)/$(DB_NAME).db-shm
+LOCAL_SQLITE_WAL_DB_PATH=$(DB_FOLDER)/$(DB_NAME).db-wal
+
 lint:
-	golangci-lint run --config config/.golangci.yml
+	golangci-lint run --config config/.golangci.yml && \
+	govulncheck ./...                               && \
+	cd $(DB_FOLDER) 								&& \
+	sqlc vet 										&& \
+	sqlc diff
 
 format:
-	gofumpt -l -w .
+	gofumpt -extra -l -w . 										&& \
+	gci write -s standard -s default -s "prefix(github.com/)" .
 
 sqlc:
-	cd ./core/db && sqlc generate
+	cd $(DB_FOLDER) && sqlc generate
 
 generate: sqlc
 	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --config ./config/tailwind.config.js
-	./bin/esbuild core/views/assets/dist/js/vendor/stimulus-3.2.1/stimulus.js --minify --outfile=core/views/assets/dist/js/vendor/stimulus-3.2.1/stimulus.min.js
+	./bin/esbuild core/views/assets/dist/js/vendor/stimulus-3.2.1/stimulus.js           --minify --outfile=core/views/assets/dist/js/vendor/stimulus-3.2.1/stimulus.min.js
 	./bin/esbuild core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.js --minify --outfile=core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.min.js
 
 test:
-	go test -v ./...
+	go test -v -race ./...
 
 test-browser-slow:
-	go test -v ./... -rod=show,slow=1s,trace
+	go test -v -race ./... -rod=show,slow=3s,trace
 
 run:
-	go run . --config ./config/.dev
+	go run . --config ./config/.local
 
 run-mock:
-	go run . --config ./config/.dev.mock
+	go run . --config ./config/.local.mock
 
 output-schema:
-	sqlite3 ./core/db/app.db .schema > ./core/db/schema.sql
+	sqlite3 $(LOCAL_SQLITE_DB_PATH) .schema > $(LOCAL_SQLITE_SCHEMA)
 
 tailwind-watch:
 	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --watch --config ./config/tailwind.config.js
@@ -38,7 +50,7 @@ bench:
 	go test -run=^$ -bench=. ./...
 
 pprof:
-	go tool pprof -http=:8080 bin/profile.pprof
+	go tool pprof -http=:8090 bin/profile
 
 #########################
 ##        Builds       ##
@@ -64,16 +76,11 @@ build-quick:
 
 USER=root
 
-APP_NAME=app
+APP_NAME=todos
 APP_FOLDER=~/$(APP_NAME)
 
 APP_CADDY_PATH=$(APP_NAME).caddy
 SERVICE_NAME=$(APP_NAME).service
-
-DB_NAME=$(APP_NAME)
-LOCAL_SQLITE_DB_PATH=./core/db/$(DB_NAME).db
-LOCAL_SQLITE_SHM_DB_PATH=./core/db/$(DB_NAME).db-shm
-LOCAL_SQLITE_WAL_DB_PATH=./core/db/$(DB_NAME).db-wal
 
 CLOUDFLARE_ZONE_ID=CHANGE_ME
 
@@ -131,7 +138,7 @@ app-service-reload:
 	ssh $(USER)@$(VPS_IP) "systemctl daemon-reload"
 	ssh $(USER)@$(VPS_IP) "systemctl restart $(SERVICE_NAME)"
 
-upload: build-amd64
+upload: build-amd64-linux
 	ssh $(USER)@$(VPS_IP) "mkdir -p $(APP_FOLDER)/new"
 	scp -r bin/app $(USER)@$(VPS_IP):$(APP_FOLDER)/new/app
 
@@ -163,8 +170,10 @@ logs-caddy-prod:
 #########################
 
 tools:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.0
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
 	go install mvdan.cc/gofumpt@v0.5.0
+	go install github.com/daixiang0/gci@v0.11.0
+	go install golang.org/x/vuln/cmd/govulncheck@v1.0.0
 	go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.19.1
 	mkdir -p ./bin/
 	make tools-esbuild
@@ -177,7 +186,7 @@ tools-esbuild:
 
 tools-tailwind:
 	# MacOS ARM specific
-	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.2/tailwindcss-macos-arm64
+	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.3/tailwindcss-macos-arm64
 	chmod +x tailwindcss-macos-arm64
 	mv tailwindcss-macos-arm64 tailwindcss
 	mv tailwindcss ./bin/

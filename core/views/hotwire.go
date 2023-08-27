@@ -13,7 +13,7 @@ const (
 	TurboStreamMIME = "text/vnd.turbo-stream.html"
 )
 
-func TurboStreamRequest(r *http.Request) bool {
+func IsTurboStreamRequest(r *http.Request) bool {
 	return strings.Contains(r.Header.Get("Accept"), TurboStreamMIME)
 }
 
@@ -32,24 +32,24 @@ func TurboStreamRequest(r *http.Request) bool {
 func SSEMessage(w io.Writer, id int, event, message string) error {
 	_, err := fmt.Fprintf(w, "event: %s\nid: %d\n", event, id)
 	if err != nil {
-		return err
+		return fmt.Errorf("writing event and id: %w", err)
 	}
 
 	scanner := bufio.NewScanner(bytes.NewBufferString(message))
 	for scanner.Scan() {
 		_, err = fmt.Fprintf(w, "data: %s\n", scanner.Text())
 		if err != nil {
-			return err
+			return fmt.Errorf("writing message: %w", err)
 		}
 	}
 
 	if err = scanner.Err(); err != nil {
-		return err
+		return fmt.Errorf("scanning message: %w", err)
 	}
 
 	_, err = fmt.Fprint(w, "\n")
 	if err != nil {
-		return err
+		return fmt.Errorf("writing newline: %w", err)
 	}
 
 	return nil

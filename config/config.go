@@ -18,17 +18,17 @@ const (
 	SqliteDBPath = "SQLITE_DB_PATH"
 )
 
-type Server struct {
+type App struct {
 	Port    string
 	Env     Environment
 	Mocking bool
 
 	SqliteDBPath string
 
-	FrontendAssetsFS fs.FS
+	FrontendDistFS fs.FS
 }
 
-func (cfg *Server) MustValidate() {
+func (cfg *App) MustValidate() {
 	var issues []string
 
 	if cfg.Port == "" {
@@ -39,62 +39,63 @@ func (cfg *Server) MustValidate() {
 		issues = append(issues, "SQLITE_DB_PATH is required")
 	}
 
-	if cfg.FrontendAssetsFS == nil {
-		issues = append(issues, "FrontendAssetsFS is required")
+	if cfg.FrontendDistFS == nil {
+		issues = append(issues, "FrontendDistFS is required")
 	}
 
 	if len(issues) > 0 {
-		log.Fatalf("invalid server config: %s", strings.Join(issues, ", "))
+		log.Fatalf("invalid app config: %s", strings.Join(issues, ", "))
 	}
 }
 
-func FromEnv() *Server {
+func NewFromEnv() *App {
 	env, err := parseEnvironment(os.Getenv(Env))
 	if err != nil {
 		log.Fatalf("unknown environment in config dotfile file: %v", err)
 	}
 
-	return &Server{
-		Port:         os.Getenv(Port),
-		Env:          env,
-		Mocking:      os.Getenv(Mocking) == "true",
+	return &App{
+		Port:    os.Getenv(Port),
+		Env:     env,
+		Mocking: os.Getenv(Mocking) == "true",
+
 		SqliteDBPath: os.Getenv(SqliteDBPath),
 	}
 }
 
-func TestConfig() *Server {
-	cfgPath := ".dev.test"
+func NewTestConfig() *App {
+	cfgPath := ".test"
 
 	cfg, err := loadConfig(os.DirFS("./config"), cfgPath)
 	if err != nil {
-		log.Fatalf("error loading test server config file: %v", err)
+		log.Fatalf("error loading test app config file: %v", err)
 	}
 
 	return cfg
 }
 
-func FromCustomConfig(cfgPath string) *Server {
+func NewFromCustomConfig(cfgPath string) *App {
 	absPath, err := filepath.Abs(cfgPath)
 	if err != nil {
-		log.Fatalf("error resolving server config path: %v", err)
+		log.Fatalf("error resolving app config path: %v", err)
 	}
 
 	cfg, err := loadConfig(os.DirFS(filepath.Dir(absPath)), filepath.Base(absPath))
 	if err != nil {
-		log.Fatalf("error loading custom server config file: %v", err)
+		log.Fatalf("error loading custom app config file: %v", err)
 	}
 
 	return cfg
 }
 
-func loadConfig(fsys fs.FS, filePath string) (*Server, error) {
+func loadConfig(fsys fs.FS, filePath string) (*App, error) {
 	file, err := fsys.Open(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("opening config dotfile file: %w", err)
 	}
 	defer file.Close()
 
-	var config Server
+	var config App
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -132,7 +133,7 @@ func loadConfig(fsys fs.FS, filePath string) (*Server, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("reading config dotfile file: %w", err)
 	}
 
 	return &config, nil

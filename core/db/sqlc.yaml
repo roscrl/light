@@ -3,6 +3,10 @@ sql:
   - engine: "sqlite"
     schema: "schema.sql"
     queries: "query.sql"
+    database:
+      uri: file:app.db
+    rules:
+      - sqlc/db-prepare
     gen:
       go:
         package: "sqlc"

@@ -1,0 +1,10 @@
+{{define "todo:card-frame" }}
+    <turbo-frame id="todo-{{.ID}}" class="flex select-none w-full">
+        <label class="hover:bg-gray-100 p-2 hover:cursor-pointer rounded-[8px] items-center">
+            <input onchange="this.form.requestSubmit()" type="checkbox" name="status" {{if eq .Status "done"}}checked{{end}}>
+            {{ block "todo:card-frame:label-task" .}}{{end}}
+        </label>
+
+        {{ block "todo:card-frame:button" .}}{{end}}
+    </turbo-frame>
+{{end}}

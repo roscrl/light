@@ -6,7 +6,7 @@
     <kind value="PACKAGE" />
     <package value="github.com/roscrl/light" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$/main.go" />
+    <filePath value="$PROJECT_DIR$" />
     <method v="2" />
   </configuration>
 </component>

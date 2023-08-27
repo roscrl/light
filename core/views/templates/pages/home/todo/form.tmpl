@@ -1,0 +1,34 @@
+{{define "todo:form"}}
+    <turbo-frame id="todo_form_frame" target="_top">
+        <form class="grid grid-rows-1 grid-cols-9 mt-0.5 w-128" method="POST" action="/todos/create">
+            <div class="flex flex-col px-1 mt-[4px] mx-1 p-[3px] overflow-hidden h-fit
+                        col-start-1 col-end-10
+                        sm:col-start-2 sm:col-end-9
+                        lg:col-start-3 lg:col-end-8
+                        xl:col-start-4 xl:col-end-7 relative">
+                <label class="relative block">
+                    <input name="task"
+                           class="bg-gray-100 w-full
+                                  focus:ring-inset
+                                  p-1
+                                  px-[9px]
+                                  rounded-[10px]
+                                  placeholder:text-center
+                                  block"
+                           autocomplete="off" maxlength="200"
+                           placeholder="enter todo"
+                           value="{{.input_todo}}">
+                </label>
+                {{if .error}}
+                    <div class="flex justify-center mx-3 px-1 mt-[6px] text-xs text-center
+                            col-start-1 col-end-10
+                            sm:col-start-2 sm:col-end-9
+                            lg:col-start-3 lg:col-end-8
+                            xl:col-start-4 xl:col-end-7">
+                        <span class="leading-none" data-testid="todo_form_error">{{ .error }}</span>
+                    </div>
+                {{end}}
+            </div>
+        </form>
+    </turbo-frame>
+{{end}}

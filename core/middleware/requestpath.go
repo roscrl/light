@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/roscrl/light/core/support/contexthelp"
+	"github.com/roscrl/light/core/util/contextutil"
 )
 
 func RequestPath(next http.Handler, ignorePath string) http.Handler {
@@ -18,7 +18,7 @@ func RequestPath(next http.Handler, ignorePath string) http.Handler {
 			return
 		}
 
-		rctx := context.WithValue(r.Context(), contexthelp.RequestPathKey{}, path)
+		rctx := context.WithValue(r.Context(), contextutil.RequestPathKey{}, path)
 		r = r.WithContext(rctx)
 
 		next.ServeHTTP(w, r)

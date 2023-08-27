@@ -1,0 +1,17 @@
+<turbo-stream action="replace" target="todo-{{.todo.ID}}">
+    <template>
+        {{template "todo:card-frame" .}}
+    </template>
+</turbo-stream>
+
+{{define "todo:card-frame:label-task"}}
+    <label>
+        <input type="text" name="task" autofocus value="{{.todo.Task}}">
+    </label>
+{{end}}
+
+{{define "todo:card-frame:button"}}
+    <button class="ml-auto w-6">
+        update
+    </button>
+{{end}}

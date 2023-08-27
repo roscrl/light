@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/roscrl/light/core/support/contexthelp"
 	"github.com/roscrl/light/core/support/rlog"
+	"github.com/roscrl/light/core/support/rlog/key"
+	"github.com/roscrl/light/core/util/contextutil"
 )
 
 func Recovery(next http.Handler) http.Handler {
@@ -22,11 +23,11 @@ func Recovery(next http.Handler) http.Handler {
 					err = fmt.Errorf("unknown panic: %v", panicType)
 				}
 
-				log, rctx := rlog.L(r.Context())
-				log.ErrorContext(rctx, "panic", "err", err)
+				log, rctx := rlog.L(r)
+				log.ErrorContext(rctx, "panic", key.Err, err)
 
 				var requestID string
-				if rid, ok := r.Context().Value(contexthelp.RequestIDKey{}).(string); ok {
+				if rid, ok := r.Context().Value(contextutil.RequestIDKey{}).(string); ok {
 					requestID = rid
 				}
 

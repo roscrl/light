@@ -1,6 +1,6 @@
 # light
 
-fullstack go web app template, for those without [imaginary problems](https://cerebralab.com/Imaginary_Problems_Are_the_Root_of_Bad_Software).
+fullstack go web app template, for those who enjoy [radical simplicty](https://www.radicalsimpli.city).
 
 ## Setup
 
@@ -12,11 +12,15 @@ go install golang.org/x/tools/cmd/gonew@latest
 gonew github.com/roscrl/light
 ```
 
-### Config
-
-Search for `CHANGE_ME` in the codebase and replace with your own values
 
 ## Dependencies
+
+#### Backend
+
+`go-sqlite3` database driver, requires CGO to build. Prefer `zig cc` over `gcc`/`clang` for easier cross compilation
+
+
+#### Frontend
 
 `tailwindcss` styling
 
@@ -26,7 +30,7 @@ Search for `CHANGE_ME` in the codebase and replace with your own values
 
 `esbuild` bundling
 
-`go-sqlite3` database driver, requires CGO to build. Prefer `zig cc` over `gcc`/`clang` for easier cross compilation
+#### Development
 
 `sqlc` generate Go code from [SQL queries](core/db/query.sql)
 
@@ -43,11 +47,11 @@ Search for `CHANGE_ME` in the codebase and replace with your own values
 ## Deploy
 
 Prefer to deploy on a [VPS](https://specbranch.com/posts/one-big-server/)
+- Search for `CHANGE_ME` in the codebase and replace with your own values
 
 #### VPS Setup
 
 - Ensure `config/private.pem` exists (cloudflare origin certificate private key)
-- Ensure `config/.prod` exists (app config)
 - Set `VPS_IP` environment variable
 - Set `CLOUDFLARE_EMAIL` environment variable
 - Set `CLOUDFLARE_KEY` environment variable

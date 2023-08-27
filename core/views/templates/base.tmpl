@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    {{block "page:meta" .}}{{end}}
+
+    <title data-testid="page_title">{{template "page:title" .}}</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+    <link rel="stylesheet" href="/assets/main.css">
+
+    <script type="importmap">
+        {
+          "imports": {
+            "@hotwired/turbo": "/assets/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.min.js",
+            "@hotwired/stimulus": "/assets/js/vendor/stimulus-3.2.1/stimulus.min.js",
+
+            "controllers/": "/assets/js/controllers/",
+            "endpoints": "/assets/js/endpoints.js"
+          }
+        }
+    </script>
+
+    <script type="module">
+        import * as Turbo from "@hotwired/turbo"
+        import { Application } from "@hotwired/stimulus"
+
+        document.addEventListener("DOMContentLoaded", function () {
+            Turbo.start()
+
+            window.Stimulus = Application.start()
+        })
+    </script>
+</head>
+
+<body>
+{{template "page:body" .}}
+</body>
+
+</html>

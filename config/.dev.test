@@ -1,5 +1,0 @@
-PORT=3000
-
-ENV=DEV
-SQLITE_DB_PATH=./core/db/app.db
-MOCKING=false

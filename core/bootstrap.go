@@ -1,42 +1,41 @@
 package core
 
 import (
-	"embed"
 	"flag"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/roscrl/light/config"
+	"github.com/roscrl/light/core/app"
 )
-
-//go:embed views/assets/dist
-var frontendAssets embed.FS
 
 func Bootstrap() {
 	var configPath string
 
-	flag.StringVar(&configPath, "config", "USE_ENVIRONMENT", "file path to server config file otherwise use environment variables")
+	flag.StringVar(&configPath, "config", "USE_ENVIRONMENT", "file path to server config file else use environment variables")
 	flag.Parse()
 
-	var cfg *config.Server
+	var cfg *config.App
 	if configPath == "USE_ENVIRONMENT" {
-		cfg = config.FromEnv()
+		cfg = config.NewFromEnv()
 	} else {
-		cfg = config.FromCustomConfig(configPath)
+		cfg = config.NewFromCustomConfig(configPath)
 	}
 
-	cfg.FrontendAssetsFS = frontendAssets
-	cfg.MustValidate()
-
-	srv := NewServer(cfg)
+	app := app.NewApp(cfg)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	srv.Start()
+	if err := app.Start(); err != nil {
+		log.Fatalf("failed to start app: %v", err)
+	}
 
 	<-stop
 
-	srv.Stop()
+	if err := app.Stop(); err != nil {
+		log.Fatalf("failed to stop app: %v", err)
+	}
 }

@@ -1,0 +1,13 @@
+<turbo-stream action="replace" target="todo_form_frame">
+    <template>
+        {{ template "todo:form" .}}
+    </template>
+</turbo-stream>
+
+{{ if not .error }}
+    <turbo-stream action="prepend" target="todo_list">
+        <template>
+            {{ template "todo:card" .todo}}
+        </template>
+    </turbo-stream>
+{{ end }}

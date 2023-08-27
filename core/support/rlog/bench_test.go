@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/roscrl/light/core/support/contexthelp"
+	"github.com/roscrl/light/core/util/contextutil"
 )
 
 var (
@@ -31,8 +31,8 @@ func BenchmarkNewLoggerEveryRequest(b *testing.B) {
 
 		logger = slog.New(&requestContextHandler)
 
-		ctx = context.WithValue(ctx, contexthelp.RequestLoggerKey{}, logger)
-		ctx = context.WithValue(ctx, contexthelp.RequestIDKey{}, requestID)
+		ctx = context.WithValue(ctx, contextutil.RequestLoggerKey{}, logger)
+		ctx = context.WithValue(ctx, contextutil.RequestIDKey{}, requestID)
 	}
 
 	resultCtx = ctx
@@ -57,7 +57,7 @@ func BenchmarkCloningWithLoggerEveryRequest(b *testing.B) {
 
 		logger2 := logger.With(slog.String(RequestIDLogKey, requestID))
 
-		ctx = context.WithValue(ctx, contexthelp.RequestLoggerKey{}, logger2)
+		ctx = context.WithValue(ctx, contextutil.RequestLoggerKey{}, logger2)
 	}
 
 	resultCtx = ctx
