@@ -8,11 +8,11 @@ import (
 	"github.com/roscrl/light/core/util/contextutil"
 )
 
-func RequestPath(next http.Handler, ignorePath string) http.Handler {
+func RequestPath(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 
-		if strings.HasPrefix(path, ignorePath) {
+		if strings.HasPrefix(path, "/assets") {
 			next.ServeHTTP(w, r)
 
 			return

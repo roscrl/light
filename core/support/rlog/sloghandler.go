@@ -12,6 +12,7 @@ import (
 const (
 	RequestPathLogKey = "request_path"
 	RequestIDLogKey   = "request_id"
+	RequestIPLogKey   = "request_ip"
 )
 
 type ContextRequestHandler struct {
@@ -22,12 +23,16 @@ type ContextRequestHandler struct {
 }
 
 func (h *ContextRequestHandler) Handle(ctx context.Context, record slog.Record) error {
-	if path, ok := ctx.Value(contextutil.RequestPathKey{}).(string); ok {
-		record.AddAttrs(slog.String(RequestPathLogKey, path))
+	if rpath, ok := ctx.Value(contextutil.RequestPathKey{}).(string); ok {
+		record.AddAttrs(slog.String(RequestPathLogKey, rpath))
 	}
 
 	if rid, ok := ctx.Value(contextutil.RequestIDKey{}).(string); ok {
 		record.AddAttrs(slog.String(RequestIDLogKey, rid))
+	}
+
+	if rip, ok := ctx.Value(contextutil.RequestIPKey{}).(string); ok {
+		record.AddAttrs(slog.String(RequestIPLogKey, rip))
 	}
 
 	err := h.Handler.Handle(ctx, record)

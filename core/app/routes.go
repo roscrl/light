@@ -69,17 +69,21 @@ func (app *App) routes() http.Handler {
 		routes = append(routes, observabilityRoutes...)
 	}
 
-	routerEntry := app.routing(routes)
+	middlewares := []func(http.Handler) http.Handler{
+		middleware.RequestRecoverer,
+		middleware.RequestDuration,
+		middleware.RequestIP,
+		middleware.RequestID,
+		middleware.RequestPath,
+		middleware.RequestLogger,
+	}
 
-	return middleware.RequestLogger(
-		middleware.RequestPath(
-			middleware.RequestID(
-				middleware.Recovery(
-					middleware.RequestDuration(
-						routerEntry, RouteAssetBase,
-					),
-				),
-			), RouteAssetBase,
-		),
-	)
+	routerEntry := app.routing(routes)
+	wrappedEntry := http.Handler(routerEntry)
+
+	for _, mw := range middlewares {
+		wrappedEntry = mw(wrappedEntry)
+	}
+
+	return wrappedEntry
 }

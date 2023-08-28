@@ -6,6 +6,7 @@ type (
 	RequestLoggerKey struct{}
 	RequestIDKey     struct{}
 	RequestPathKey   struct{}
+	RequestIPKey     struct{}
 )
 
 // TODO check this

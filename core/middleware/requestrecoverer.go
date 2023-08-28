@@ -9,7 +9,7 @@ import (
 	"github.com/roscrl/light/core/util/contextutil"
 )
 
-func Recovery(next http.Handler) http.Handler {
+func RequestRecoverer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if recovery := recover(); recovery != nil {
