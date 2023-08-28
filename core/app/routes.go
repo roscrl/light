@@ -70,18 +70,19 @@ func (app *App) routes() http.Handler {
 	}
 
 	middlewares := []func(http.Handler) http.Handler{
-		middleware.RequestRecoverer,
-		middleware.RequestDuration,
-		middleware.RequestIP,
-		middleware.RequestID,
-		middleware.RequestPath,
 		middleware.RequestLogger,
+		middleware.RequestPath,
+		middleware.RequestID,
+		middleware.RequestIP,
+		middleware.RequestDuration,
+		middleware.RequestRecoverer,
 	}
 
 	routerEntry := app.routing(routes)
 	wrappedEntry := http.Handler(routerEntry)
 
-	for _, mw := range middlewares {
+	for i := len(middlewares) - 1; i >= 0; i-- {
+		mw := middlewares[i]
 		wrappedEntry = mw(wrappedEntry)
 	}
 
