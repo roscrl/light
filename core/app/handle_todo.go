@@ -13,6 +13,10 @@ import (
 )
 
 func (app *App) handleTodoCreate() http.HandlerFunc {
+	const (
+		FormTask = "task"
+	)
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		log, rctx := rlog.L(r)
 
@@ -22,16 +26,7 @@ func (app *App) handleTodoCreate() http.HandlerFunc {
 			return
 		}
 
-		if err := r.ParseForm(); err != nil {
-			log.InfoContext(rctx, "failed to parse form", key.Err, err)
-			app.Views.RenderTurboStream(w, views.TodoFormNewStream, map[string]any{
-				params.Error: "Failed to parse given task.",
-			})
-
-			return
-		}
-
-		task := r.Form.Get("task")
+		task := r.FormValue(FormTask)
 		if task == "" {
 			app.Views.RenderTurboStream(w, views.TodoFormNewStream, map[string]any{
 				params.Error: "task cannot be empty.",
@@ -43,7 +38,7 @@ func (app *App) handleTodoCreate() http.HandlerFunc {
 		todo := sqlc.CreateTodoParams{
 			ID:     ulid.NewString(),
 			Task:   task,
-			Status: "pending",
+			Status: string(todo.Pending),
 		}
 
 		_, err := app.Qry.CreateTodo(rctx, todo)
@@ -92,18 +87,16 @@ func (app *App) handleTodoEdit() http.HandlerFunc {
 }
 
 func (app *App) handleTodoUpdate() http.HandlerFunc {
+	const (
+		FormStatus = "status"
+		FormTask   = "task"
+	)
+
 	return func(w http.ResponseWriter, r *http.Request) {
-		log, rctx := rlog.L(r)
+		_, rctx := rlog.L(r)
 
 		if !views.IsTurboStreamRequest(r) {
 			http.Redirect(w, r, RouteHome, http.StatusSeeOther)
-
-			return
-		}
-
-		if err := r.ParseForm(); err != nil {
-			log.InfoContext(rctx, "failed to parse form", key.Err, err)
-			app.Views.RenderDefaultErrorPage(w)
 
 			return
 		}
@@ -117,14 +110,14 @@ func (app *App) handleTodoUpdate() http.HandlerFunc {
 			return
 		}
 
-		status := r.Form.Get("status")
+		status := r.FormValue(FormStatus)
 		if status == "" {
 			status = string(todo.Pending)
 		} else {
 			status = string(todo.Done)
 		}
 
-		task := r.Form.Get("task")
+		task := r.FormValue(FormTask)
 		if task == "" {
 			task = existingTodo.Task
 		}
