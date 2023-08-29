@@ -11,6 +11,7 @@ go install golang.org/x/tools/cmd/gonew@latest
 ```bash
 gonew github.com/roscrl/light
 ```
+<img width="708" alt="image" src="https://github.com/roscrl/light/assets/13072760/d4996bce-b276-4618-9f5a-373151a4c796">
 
 
 ## Dependencies
