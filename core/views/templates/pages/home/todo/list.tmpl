@@ -1,9 +1,7 @@
 {{define "todo:list" }}
-    <div class="flex-col w-[350px] mx-auto mt-[12px]">
-        <turbo-frame id="todo_list">
-            {{range .}}
-                {{template "todo:card" .}}
-            {{end}}
-        </turbo-frame>
-    </div>
+    <turbo-frame id="todo_list">
+        {{range .}}
+            {{template "todo:card" .}}
+        {{end}}
+    </turbo-frame>
 {{end}}

@@ -2,7 +2,7 @@
 ##     Development     ##
 #########################
 
-DB_NAME=$(APP_NAME)
+DB_NAME=app
 DB_FOLDER=./core/db
 LOCAL_SQLITE_SCHEMA=$(DB_FOLDER)/schema.sql
 LOCAL_SQLITE_DB_PATH=$(DB_FOLDER)/$(DB_NAME).db
@@ -29,16 +29,16 @@ generate: sqlc
 	./bin/esbuild core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.js --minify --outfile=core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.min.js
 
 test:
-	go test -v -race ./...
+	go test --tags "fts5" -v -race ./...
 
 test-browser-slow:
-	go test -v -race ./... -rod=show,slow=3s,trace
+	go test --tags "fts5" -v -race ./... -rod=show,slow=3s,trace
 
 run:
-	go run . --config ./config/.local
+	go run --tags "fts5" . --config ./config/.local
 
 run-mock:
-	go run . --config ./config/.local.mock
+	go run --tags "fts5" . --config ./config/.local.mock
 
 output-schema:
 	sqlite3 $(LOCAL_SQLITE_DB_PATH) .schema > $(LOCAL_SQLITE_SCHEMA)
@@ -47,7 +47,7 @@ tailwind-watch:
 	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --watch --config ./config/tailwind.config.js
 
 bench:
-	go test -run=^$ -bench=. ./...
+	go test --tags "fts5" -run=^$ -bench=. ./...
 
 pprof:
 	go tool pprof -http=:8090 bin/profile
@@ -59,16 +59,16 @@ pprof:
 pre-build: lint format generate test
 
 build-amd64-linux: pre-build
-	CC="zig cc -target x86_64-linux-musl" CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o bin/app .
+	CC="zig cc -target x86_64-linux-musl" CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build --tags "fts5" -o bin/app .
 
 build-arm64-linux: pre-build
-	CC="zig cc -target aarch64-linux-musl" CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -o bin/app .
+	CC="zig cc -target aarch64-linux-musl" CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build --tags "fts5" -o bin/app .
 
 build: pre-build
-	go build -o bin/app .
+	go build --tags "fts5" -o bin/app .
 
 build-quick:
-	go build -o bin/app .
+	go build --tags "fts5" -o bin/app .
 
 #########################
 ##         VPS         ##
@@ -174,7 +174,7 @@ tools:
 	go install mvdan.cc/gofumpt@v0.5.0
 	go install github.com/daixiang0/gci@v0.11.0
 	go install golang.org/x/vuln/cmd/govulncheck@v1.0.0
-	go install github.com/kyleconroy/sqlc/cmd/sqlc@v1.19.1
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.20.0
 	mkdir -p ./bin/
 	make tools-esbuild
 	make tools-tailwind

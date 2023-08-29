@@ -15,6 +15,7 @@ const (
 	RouteTodoCreate = "/todos/create"
 	RouteTodoEdit   = "/todos/(.*)/edit"
 	RouteTodoUpdate = "/todos/(.*)/update"
+	RouteTodoSearch = "/todos/search(.*)"
 
 	RouteHealth              = "/health"
 	RouteProfileBaseRoute    = "/debug/pprof"
@@ -48,6 +49,7 @@ func (app *App) routes() http.Handler {
 		newRoute(http.MethodPost, RouteTodoCreate, app.handleTodoCreate()),
 		newRoute(http.MethodGet, RouteTodoEdit, app.handleTodoEdit()),
 		newRoute(http.MethodPost, RouteTodoUpdate, app.handleTodoUpdate()),
+		newRoute(http.MethodGet, RouteTodoSearch, app.handleTodoSearch()),
 	}
 
 	{

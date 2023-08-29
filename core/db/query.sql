@@ -19,7 +19,8 @@ SET task   = ?,
 WHERE id = ?
 RETURNING id, task, status, created_at;
 
--- name: SetTodoStatus :execresult
-UPDATE todos
-SET status = ?
-WHERE id = ?
+-- name: SearchTodos :many
+SELECT t.id, t.task, t.status, t.created_at
+FROM todos t
+         JOIN todos_search ts ON t.id = ts.id
+WHERE ts.task MATCH ?

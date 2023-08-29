@@ -2,7 +2,11 @@
 
 {{define "page:body"}}
     {{ template "todo:form" .}}
-    {{ template "todo:list" .todos}}
+    {{ template "todo:form-search" .}}
+
+    <div class="flex-col w-[450px] mx-auto mt-[12px]">
+        {{ template "todo:list" .todos}}
+    </div>
 {{end}}
 
 {{template "base.tmpl" .}}

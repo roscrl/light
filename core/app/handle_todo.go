@@ -2,6 +2,7 @@ package app
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/roscrl/light/core/db/sqlc"
 	"github.com/roscrl/light/core/domain/todo"
@@ -133,6 +134,50 @@ func (app *App) handleTodoUpdate() http.HandlerFunc {
 
 		app.Views.RenderTurboStream(w, views.TodoCardUpdateStream, map[string]any{
 			params.Todo: updatedTodo,
+		})
+	}
+}
+
+func (app *App) handleTodoSearch() http.HandlerFunc {
+	const (
+		formQuery = "query"
+	)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		log, rctx := rlog.L(r)
+
+		if !views.IsTurboStreamRequest(r) {
+			http.Redirect(w, r, RouteHome, http.StatusSeeOther)
+
+			return
+		}
+
+		var (
+			todos []sqlc.Todo
+			err   error
+		)
+
+		query := r.FormValue(formQuery)
+		if query == "" {
+			todos, err = app.Qry.GetTodos(rctx)
+		} else {
+			if strings.HasSuffix(query, "*") {
+				query = query[:len(query)-1]
+			}
+
+			todos, err = app.Qry.SearchTodos(rctx, query+"*")
+		}
+		if err != nil {
+			log.ErrorContext(rctx, "failed to search todos", key.Err, err)
+			app.Views.RenderTurboStream(w, views.TodoFormSearchStream, map[string]any{
+				params.Error: "Oops, something went wrong searching the todos, try again later!",
+			})
+
+			return
+		}
+
+		app.Views.RenderTurboStream(w, views.TodoListSearchStream, map[string]any{
+			params.Todos: todos,
 		})
 	}
 }
