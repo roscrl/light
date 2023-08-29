@@ -173,7 +173,7 @@ tools:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
 	go install mvdan.cc/gofumpt@v0.5.0
 	go install github.com/daixiang0/gci@v0.11.0
-	go install golang.org/x/vuln/cmd/govulncheck@v1.0.0
+	go install golang.org/x/vuln/cmd/govulncheck@v1.0.1
 	go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.20.0
 	mkdir -p ./bin/
 	make tools-esbuild

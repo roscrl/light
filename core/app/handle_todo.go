@@ -161,12 +161,10 @@ func (app *App) handleTodoSearch() http.HandlerFunc {
 		if query == "" {
 			todos, err = app.Qry.GetTodos(rctx)
 		} else {
-			if strings.HasSuffix(query, "*") {
-				query = query[:len(query)-1]
-			}
-
+			query = strings.TrimSuffix(query, "*")
 			todos, err = app.Qry.SearchTodos(rctx, query+"*")
 		}
+
 		if err != nil {
 			log.ErrorContext(rctx, "failed to search todos", key.Err, err)
 			app.Views.RenderTurboStream(w, views.TodoFormSearchStream, map[string]any{
