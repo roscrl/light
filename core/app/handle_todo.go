@@ -13,9 +13,7 @@ import (
 )
 
 func (app *App) handleTodoCreate() http.HandlerFunc {
-	const (
-		FormTask = "task"
-	)
+	const formTask = "task"
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		log, rctx := rlog.L(r)
@@ -26,7 +24,7 @@ func (app *App) handleTodoCreate() http.HandlerFunc {
 			return
 		}
 
-		task := r.FormValue(FormTask)
+		task := r.FormValue(formTask)
 		if task == "" {
 			app.Views.RenderTurboStream(w, views.TodoFormNewStream, map[string]any{
 				params.Error: "task cannot be empty.",
@@ -88,8 +86,8 @@ func (app *App) handleTodoEdit() http.HandlerFunc {
 
 func (app *App) handleTodoUpdate() http.HandlerFunc {
 	const (
-		FormStatus = "status"
-		FormTask   = "task"
+		formStatus = "status"
+		formTask   = "task"
 	)
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -110,20 +108,20 @@ func (app *App) handleTodoUpdate() http.HandlerFunc {
 			return
 		}
 
-		status := r.FormValue(FormStatus)
+		status := r.FormValue(formStatus)
 		if status == "" {
 			status = string(todo.Pending)
 		} else {
 			status = string(todo.Done)
 		}
 
-		task := r.FormValue(FormTask)
+		task := r.FormValue(formTask)
 		if task == "" {
 			task = existingTodo.Task
 		}
 
 		updatedTodo, err := app.Qry.UpdateTodo(rctx, sqlc.UpdateTodoParams{
-			ID:     getField(r, 0),
+			ID:     todoID,
 			Task:   task,
 			Status: status,
 		})
