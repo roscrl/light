@@ -2,11 +2,14 @@ package browser
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/go-rod/rod"
 	"github.com/go-rod/rod/lib/input"
+
 	"github.com/roscrl/light/app"
 	"github.com/roscrl/light/config"
 	"github.com/roscrl/light/core/helpers/ulid"
@@ -119,6 +122,16 @@ func TestHome(t *testing.T) {
 		updatedText := homePage.MustElement(updatedTextSelector).MustText()
 		is.Equal(strings.TrimSpace(updatedText), "updated todo!")
 	}
+}
+
+func TestStartup(t *testing.T) {
+	now := time.Now()
+
+	browser := newBrowserWithCleanup(t)
+	browser.MustPage("https://www.google.com")
+
+	elapsed := time.Since(now)
+	log.Printf("took %s", elapsed)
 }
 
 func TestHomeSearch(t *testing.T) {
