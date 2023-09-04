@@ -114,4 +114,4 @@ gonew github.com/roscrl/light
 - Load testing https://shane.ai/posts/load-testing-tips/
 - Simplest possible auth solution
 - Replica to S3 for SQLite https://litestream.io
-- Tailwind css formatter and plugin, not working for some reason on Intellij multiple tickets open on Intellij YouTrack
+- Tailwind css formatter/autocomplete plugin, not working for some reason on Intellij multiple tickets open on Intellij YouTrack
