@@ -4,6 +4,20 @@ fullstack go web app template, for those who enjoy [radical simplicty](https://w
 
 ## Setup
 
+
+<p align="center">
+  <img width="681" alt="image" src="https://github.com/roscrl/light/assets/13072760/58030551-0b2f-43e3-898b-b3d388b4b85f">
+</p>
+
+```bash
+git clone https://github.com/roscrl/light.git &&
+cd light                                      &&
+make tools                                    &&
+make run
+```
+
+## Go Template
+
 ```bash
 go install golang.org/x/tools/cmd/gonew@latest
 ```
@@ -11,22 +25,6 @@ go install golang.org/x/tools/cmd/gonew@latest
 ```bash
 gonew github.com/roscrl/light
 ```
-
-<p align="center">
-  <img width="681" alt="image" src="https://github.com/roscrl/light/assets/13072760/58030551-0b2f-43e3-898b-b3d388b4b85f">
-</p>
-
-<p align="center">
-<code>git clone https://github.com/roscrl/light.git && cd light</code>
-</p>
-
-<p align="center">
-<code>make tools</code>
-</p>
-
-<p align="center">
-<code>make run</code>
-</p>
 
 ## Dependencies
 
