@@ -65,7 +65,7 @@ tailwind-watch:
 	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --watch --config ./config/tailwind.config.js
 
 bench:
-	go test --tags "$(BUILD_TAGS)" -run=XXX -bench=. ./...
+	go test --tags "$(BUILD_TAGS)" -run=XXX -bench=. ./... | tee bin/bench.txt
 
 bench-individual-cpu:
 	go test --tags "$(BUILD_TAGS)" -run=XXX -bench=BenchmarkHome -cpuprofile ./bin/BenchmarkHome.out ./tests/bench

@@ -27,12 +27,16 @@ jobs:
     - name: Bench
       run: make bench
 
-    - name: gobenchdata publish
-      uses: bobheadxi/gobenchdata@v1
+    - name: Store benchmark result
+      uses: benchmark-action/github-action-benchmark@v1
       with:
-        PRUNE_COUNT: 30
-        GO_TEST_FLAGS: -cpu 1,2
-        PUBLISH: true
-        PUBLISH_BRANCH: gh-pages
-      env:
-        GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        name: Go Benchmark
+        tool: 'go'
+        output-file-path: bin/bench.txt
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        # Show alert with commit comment on detecting possible performance regression
+        alert-threshold: '200%'
+        comment-on-alert: true
+        fail-on-alert: true
+        alert-comment-cc-users: '@roscrl'
