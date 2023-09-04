@@ -17,17 +17,7 @@ jobs:
       with:
         go-version: '1.21'
         
-    - name: Cache Tools
-      id: cache-tools
-      uses: actions/cache@v2
-      with:
-        path: ~/bin
-        key: ${{ runner.os }}-go-123
-        restore-keys: |
-          ${{ runner.os }}-go-
-
-    - name: Install tools
-      if: steps.cache-tools.outputs.cache-hit != 'true'
+    - name: Tools
       run: make tools
 
     - name: Lint
@@ -36,21 +26,21 @@ jobs:
     - name: Bench
       run: make bench
 
-    - name: Download previous benchmark data
-      uses: actions/cache@v1
-      with:
-        path: ./cache
-        key: ${{ runner.os }}-benchmark
-
-    - name: Store benchmark result
-      uses: benchmark-action/github-action-benchmark@v1
-      with:
-        tool: 'go'
-        output-file-path: bin/bench.txt
-        external-data-json-path: ./cache/bench.txt
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        auto-push: true
-        fail-on-alert: true
-        alert-threshold: '200%'
-        comment-on-alert: true
-        alert-comment-cc-users: '@roscrl'
+#    - name: Download previous benchmark data
+#      uses: actions/cache@v1
+#      with:
+#        path: ./cache
+#        key: ${{ runner.os }}-benchmark
+#
+#    - name: Store benchmark result
+#      uses: benchmark-action/github-action-benchmark@v1
+#      with:
+#        tool: 'go'
+#        output-file-path: bin/bench.txt
+#        external-data-json-path: ./cache/bench.txt
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
+#        auto-push: true
+#        fail-on-alert: true
+#        alert-threshold: '200%'
+#        comment-on-alert: true
+#        alert-comment-cc-users: '@roscrl'
