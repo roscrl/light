@@ -110,7 +110,7 @@ vps-new:
 	make deploy
 
 vps-dependencies:
-	ssh $(VPS_USER)@$(VPS_IP) "sudo apt-get update && sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list && sudo apt -y update && sudo apt -y install caddy && sudo apt -y install lnav"
+	ssh $(VPS_USER)@$(VPS_IP) "sudo apt-get update && sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list && sudo apt -y update && sudo apt -y install caddy lnav unattended-upgrades apt-listchanges"
 
 caddy-root-config:
 	scp -r ./config/Caddyfile $(VPS_USER)@$(VPS_IP):/etc/caddy/Caddyfile
