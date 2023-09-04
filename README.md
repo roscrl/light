@@ -2,12 +2,11 @@
 
 fullstack go web app template, for those who enjoy [radical simplicty](https://www.radicalsimpli.city).
 
-## Setup
-
-
 <p align="center">
   <img width="681" alt="image" src="https://github.com/roscrl/light/assets/13072760/58030551-0b2f-43e3-898b-b3d388b4b85f">
 </p>
+
+## Setup
 
 ```bash
 git clone https://github.com/roscrl/light.git &&
