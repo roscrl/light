@@ -52,7 +52,7 @@ gonew github.com/roscrl/light
 
 - Search for `CHANGE_ME` in the codebase and replace with your own values
 
-#### VPS Setup
+#### Setup
 
 - Ensure `config/private.pem` exists (cloudflare origin certificate private key)
 - Set `VPS_IP` environment variable
