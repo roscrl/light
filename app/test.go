@@ -1,12 +1,10 @@
 package app
 
-//nolint:revive
 import (
 	"testing"
 
 	"github.com/matryer/is"
 	"github.com/roscrl/light/config"
-	_ "github.com/roscrl/light/core/utils/testutil"
 )
 
 func NewUnstartedTestApp(t *testing.T, cfg *config.App) (*is.I, *App) {

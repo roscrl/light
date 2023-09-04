@@ -105,7 +105,7 @@ vps-new:
 	make caddy-cert
 	make caddy-service-reload
 	make caddy-reload
-	make db-copy-to-prod
+	make db-copy-local-to-prod
 	make app-service-reload
 	make deploy
 
@@ -145,11 +145,13 @@ db-copy-local-to-prod-force:
 	rsync -avz $(SQLITE_PATH_DB_WAL) $(VPS_USER)@$(VPS_IP):$(VPS_APP_FOLDER)/db/
 
 app-service-reload:
+	scp -r ./config/.prod $(VPS_USER)@$(VPS_IP):$(VPS_APP_FOLDER)
 	scp -r ./config/$(VPS_APP_SERVICE_NAME) $(VPS_USER)@$(VPS_IP):/lib/systemd/system/$(VPS_APP_SERVICE_NAME)
 	ssh $(VPS_USER)@$(VPS_IP) "systemctl daemon-reload"
 	ssh $(VPS_USER)@$(VPS_IP) "systemctl restart $(VPS_APP_SERVICE_NAME)"
 
 upload: build-amd64-linux
+	scp -r ./config/.prod $(VPS_USER)@$(VPS_IP):$(VPS_APP_FOLDER)
 	ssh $(VPS_USER)@$(VPS_IP) "mkdir -p $(VPS_APP_FOLDER)/new"
 	scp -r bin/app $(VPS_USER)@$(VPS_IP):$(VPS_APP_FOLDER)/new/app
 

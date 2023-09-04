@@ -51,7 +51,7 @@ func (cfg *App) MustValidate() {
 func NewFromEnv() *App {
 	env, err := parseEnvironment(os.Getenv(Env))
 	if err != nil {
-		log.Fatalf("unknown environment in config dotfile file: %v", err)
+		log.Fatalf("unknown environment set: %v", err)
 	}
 
 	return &App{

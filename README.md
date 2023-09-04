@@ -48,34 +48,51 @@ gonew github.com/roscrl/light
 
 `gofumpt` formatting
 
-## VPS Deploy
-
-- Search for `CHANGE_ME` in the codebase and replace with your own values
-
-#### Setup
-
-- Ensure `config/private.pem` exists (cloudflare origin certificate private key)
-- Set `VPS_IP` environment variable
-- Set `CLOUDFLARE_EMAIL` environment variable
-- Set `CLOUDFLARE_KEY` environment variable
-- Run `make vps-new`
+## VPS Deploy Checklist
 
 ### Cloudflare
 
 - Set SSL `Full (strict)`
 - Add an A record in the DNS settings pointing to VPS IP
-- Create Origin Certificate and place in `config/public.pem` & `config/private.pem`
+- Create an 'Origin Certificate' and place in `config/public.pem` & `config/private.pem`
 - Enable Rate Limiting
   - `(http.request.uri.path contains "/")` 50 requests per 10s
 - Enable [Bot Fight Mode](https://developers.cloudflare.com/bots/get-started/free/)
 - Enable Page Rules Caching to respect `Cache-Control` headers returned
-    - playlistvote.com/* Cache Level: Cache Everything
+  - playlistvote.com/* Cache Level: Cache Everything
 - Always Use HTTPS, Enable Brotli
 
 ### Hetzner
 
 - Set firewall to allow only [Cloudflare IPs](https://www.cloudflare.com/en-gb/ips/) on port 443
 - Set firewall to allow only personal IP on port 22
+
+### VPS Setup
+
+- Change `Makefile` constant `APP_NAME` to your own
+- Change `Makefile` constant `CLOUDFLARE_ZONE_ID` to your own
+
+
+- Change filename `config/todos.caddy` to `<APP_NAME>.caddy`
+- Change `config/todos.caddy` `tls /etc/ssl/certs/todos.pem /etc/ssl/private/todos.pem` to `tls /etc/ssl/certs/<APP_NAME>.pem /etc/ssl/private/<APP_NAME>.pem`
+
+
+- Change filename `config/todos.service` to `<APP_NAME>.service`
+- Change `config/todos.service` `EnvironmentFile=/root/todos/.prod` to `EnvironmentFile=/root/<APP_NAME>/.prod`
+- Change `config/todos.service` `WorkingDirectory=/root/todos` to `WorkingDirectory=/root/<APP_NAME>`
+- Change `config/todos.service` `ExecStart=/root/todos/app` to `ExecStart=/root/<APP_NAME>/app`
+
+
+- Create `config/.prod` using `config/.prod.example` as a template
+
+
+- Ensure `config/private.pem` exists (cloudflare origin certificate private key from cloudflare setup)
+- Set `VPS_IP` environment variable to your VPS IP
+- Set `CLOUDFLARE_ZONE_ID` environment variable to your cloudflare zone id
+- Set `CLOUDFLARE_EMAIL` environment variable to your cloudflare email
+- Set `CLOUDFLARE_KEY` environment variable to your cloudflare key
+- Run `make vps-new`
+
 
 ### The classic abandoned TODO section
 

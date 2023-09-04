@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/roscrl/light/config"
+	_ "github.com/roscrl/light/core/utils/testutil"
 )
 
 func TestHandleHealth(t *testing.T) {

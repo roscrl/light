@@ -2,8 +2,9 @@
 Description=App
 
 [Service]
-ExecStart=/root/app/app
-WorkingDirectory=/root/app
+EnvironmentFile=/root/todos/.prod
+ExecStart=/root/todos/app
+WorkingDirectory=/root/todos
 Restart=always
 RestartSec=5s
 

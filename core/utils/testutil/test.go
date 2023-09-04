@@ -14,6 +14,6 @@ func init() {
 
 	err := os.Chdir(dir)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("could not change directory to %s for test: %v", dir, err)
 	}
 }
