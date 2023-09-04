@@ -56,7 +56,7 @@ gonew github.com/roscrl/light
 
 `gofumpt` formatting
 
-## VPS Deploy Checklist
+## Deployment Checklist
 
 ### Cloudflare
 
