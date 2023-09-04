@@ -16,6 +16,7 @@
                                   placeholder:text-center
                                   block"
                            autocomplete="off" maxlength="200"
+                           data-testid="todo_form_search_input"
                            placeholder="search todo"
                            value="{{.input_todo}}"
                            onkeydown="clearTimeout(window.debounceTimer); window.debounceTimer = setTimeout(() => this.form.requestSubmit(), 30)">

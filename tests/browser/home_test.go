@@ -120,3 +120,40 @@ func TestHome(t *testing.T) {
 		is.Equal(strings.TrimSpace(updatedText), "updated todo!")
 	}
 }
+
+func TestHomeSearch(t *testing.T) {
+	t.Parallel()
+
+	cfg := config.NewTestConfig()
+	cfg.SqliteDBPath = fmt.Sprintf("file:%s?mode=memory&cache=shared", ulid.NewString())
+
+	is, app := app.NewStartedTestAppWithCleanup(t, cfg)
+
+	todoID1, todoID2 := ulid.NewString(), ulid.NewString()
+	{ // migrate and seed in memory database
+		db.RunMigrations(app.DB, db.PathMigrations)
+
+		_, err := app.DB.Exec("INSERT INTO todos (id, task, status) VALUES (?, ?, ?)", todoID1, "important todo!", "pending")
+		is.NoErr(err)
+
+		_, err = app.DB.Exec("INSERT INTO todos (id, task, status) VALUES (?, ?, ?)", todoID2, "also important!", "done")
+		is.NoErr(err)
+	}
+
+	browser := newBrowserWithCleanup(t)
+	homePage := browser.MustPage(localhost + app.Cfg.Port)
+
+	{ // searching for only one todo item shows only one todo item
+		formSearchInput := homePage.MustElement("[data-testid='todo_form_search_input']")
+
+		formSearchInput.MustInput("also").MustType(input.Enter)
+
+		homePage.MustWaitIdle()
+
+		todoItems := homePage.MustElements("#todo_list > turbo-frame")
+		is.Equal(len(todoItems), 1)
+
+		todoItemText := todoItems[0].MustElement("form > turbo-frame > label > span").MustText()
+		is.Equal(strings.TrimSpace(todoItemText), "also important!")
+	}
+}
