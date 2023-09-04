@@ -16,6 +16,9 @@ gonew github.com/roscrl/light
   <img width="681" alt="image" src="https://github.com/roscrl/light/assets/13072760/58030551-0b2f-43e3-898b-b3d388b4b85f">
 </p>
 
+`make tools`  
+
+`make run`
 
 ## Dependencies
 
