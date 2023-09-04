@@ -77,9 +77,7 @@ gonew github.com/roscrl/light
 - Set firewall to allow only [Cloudflare IPs](https://www.cloudflare.com/en-gb/ips/) on port 443
 - Set firewall to allow only personal IP on port 22
 
-### TODO
-
-An abandoned TODO section to have a place to put ideas
+### The classic abandoned TODO section
 
 - On PR, create a ephemeral preview environment with usage of Makefile VPS creation commands
 - On PR, performance testing should execute and attach a graph with ability to see performance changes overtime. `rod` for e2e? but `tests/bench` for individual endpoints
