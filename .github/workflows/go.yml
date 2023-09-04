@@ -1,10 +1,6 @@
 name: Go
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 jobs:
 
@@ -18,9 +14,19 @@ jobs:
       with:
         go-version: '1.21'
         
-    - name: Tools
+    - name: Cache Go tools
+      id: cache-tools
+      uses: actions/cache@v2
+      with:
+        path: ~/bin
+        key: ${{ runner.os }}-go-123
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Install tools
+      if: steps.cache-tools.outputs.cache-hit != 'true'
       run: make tools
-    
+
     - name: Lint
       run: make lint
 
