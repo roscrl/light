@@ -102,7 +102,7 @@ gonew github.com/roscrl/light
 - Run `make vps-new`
 
 
-### The classic abandoned TODO section
+### Classic abandoned TODO section
 
 - On PR, create a ephemeral preview environment with usage of Makefile VPS creation commands
 - On PR, performance testing should execute and attach a graph with ability to see performance changes overtime. `rod` for e2e? but `tests/bench` for individual endpoints
