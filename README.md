@@ -83,7 +83,7 @@ gonew github.com/roscrl/light
 - Change `config/todos.service` `ExecStart=/root/todos/app` to `ExecStart=/root/<APP_NAME>/app`
 
 
-- Create `config/.prod` using `config/.prod.example` as a template
+- Create `config/.prod` using `config/.prod.template` as a template
 
 
 - Ensure `config/private.pem` exists (cloudflare origin certificate private key from cloudflare setup)
