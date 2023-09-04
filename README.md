@@ -110,3 +110,8 @@ gonew github.com/roscrl/light
 - Code coverage + quality + unit test reports integrated to PR
 - `core/jobs` package for background jobs
 - `core/notify` package for sending notifications (email, sms, push, etc)
+- E2E testing of VPS deployment as CI/CD workflow
+- Load testing https://shane.ai/posts/load-testing-tips/
+- Simplest possible auth solution
+- Replica to S3 for SQLite https://litestream.io
+- Tailwind css formatter and plugin, not working for some reason on Intellij multiple tickets open on Intellij YouTrack
