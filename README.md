@@ -17,21 +17,15 @@ gonew github.com/roscrl/light
 </p>
 
 <p align="center">
-<code>
-git clone https://github.com/roscrl/light.git && cd light
-</code>
+<code>git clone https://github.com/roscrl/light.git && cd light</code>
 </p>
 
 <p align="center">
-<code>
-make tools
-</code>
+<code>make tools</code>
 </p>
 
 <p align="center">
-<code>
-make run
-</code>
+<code>make run</code>
 </p>
 
 ## Dependencies
