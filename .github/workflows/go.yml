@@ -25,3 +25,6 @@ jobs:
 
     - name: Bench
       run: make bench
+
+    - name: Test
+      run: make test
