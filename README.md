@@ -54,7 +54,7 @@ gonew github.com/roscrl/light
 
 - Set SSL `Full (strict)`
 - Add an A record in the DNS settings pointing to VPS IP
-- Create an 'Origin Certificate' and place in `config/public.pem` & `config/private.pem`
+- Create a 15 year 'Origin Certificate' and place in `config/public.pem` & `config/private.pem`
 - Enable Rate Limiting
   - `(http.request.uri.path contains "/")` 50 requests per 10s
 - Enable [Bot Fight Mode](https://developers.cloudflare.com/bots/get-started/free/)
