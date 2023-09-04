@@ -17,8 +17,9 @@
             "@hotwired/turbo": "/assets/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.min.js",
             "@hotwired/stimulus": "/assets/js/vendor/stimulus-3.2.1/stimulus.min.js",
 
+            "endpoints": "/assets/js/endpoints.js",
             "controllers/": "/assets/js/controllers/",
-            "endpoints": "/assets/js/endpoints.js"
+            "utils/": "/assets/js/utils/"
           }
         }
     </script>
@@ -26,11 +27,16 @@
     <script type="module">
         import * as Turbo from "@hotwired/turbo"
         import { Application } from "@hotwired/stimulus"
+        import { LocalBrowserRefresh } from "utils/local.js";
 
         document.addEventListener("DOMContentLoaded", function () {
             Turbo.start()
 
             window.Stimulus = Application.start()
+
+            {{if .local}}
+            LocalBrowserRefresh()
+            {{end}}
         })
     </script>
 </head>

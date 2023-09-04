@@ -1,3 +1,8 @@
+###
 POST http://localhost:8080/todos/create
 Accept: text/vnd.turbo-stream.html
+Content-Type: application/x-www-form-urlencoded
 
+###
+GET http://localhost:8080/todos/search?query=new
+Accept: text/vnd.turbo-stream.html

@@ -13,7 +13,7 @@
 {{end}}
 
 {{define "todo:card-frame:button"}}
-    <a href="/todos/{{.ID}}/edit" class="min-w-[70px] text-center p-2 ml-2 hover:bg-gray-100 rounded-[10px]" data-turbo-stream>
+    <a href="/todos/{{.ID}}/edit" class="min-w-[70px] text-center p-2 ml-2 hover:bg-gray-100 rounded-[10px]" data-turbo-stream data-testitem="todo_card_frame_button_edit">
         edit
     </a>
 {{end}}

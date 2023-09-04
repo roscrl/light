@@ -6,4 +6,5 @@ const (
 	InputTodo = "input_todo"
 
 	Error = "error"
+	Local = "local"
 )

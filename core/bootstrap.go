@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/roscrl/light/app"
 	"github.com/roscrl/light/config"
-	"github.com/roscrl/light/core/app"
 )
 
 func Bootstrap() {

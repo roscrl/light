@@ -5,12 +5,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/fsnotify/fsnotify"
 )
 
-func watchLocalTemplates(views *Views) {
+func watchLocalTemplates(views *Views, changed chan<- struct{}) {
 	watcher, err := fsnotify.NewWatcher() // leaks but only used for local development
 	if err != nil {
 		log.Fatal(err)
@@ -43,12 +42,29 @@ func watchLocalTemplates(views *Views) {
 		return nil
 	}
 
-	err = addWatchers("./" + PathViews)
+	err = addWatchers(PathViews)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Println("watching templates")
+
+	fileEndingsToReloadOn := map[string]struct{}{
+		".tmpl":  {},
+		".css":   {},
+		".js":    {},
+		".svg":   {},
+		".png":   {},
+		".jpg":   {},
+		".jpeg":  {},
+		".gif":   {},
+		".ico":   {},
+		".woff":  {},
+		".woff2": {},
+		".ttf":   {},
+		".eot":   {},
+		".otf":   {},
+	}
 
 	go func() {
 		for {
@@ -63,7 +79,7 @@ func watchLocalTemplates(views *Views) {
 				}
 
 				if event.Has(fsnotify.Write) || event.Has(fsnotify.Create) {
-					if !strings.HasSuffix(event.Name, ".tmpl") {
+					if _, ok := fileEndingsToReloadOn[filepath.Ext(event.Name)]; !ok {
 						continue
 					}
 
@@ -72,6 +88,8 @@ func watchLocalTemplates(views *Views) {
 					templates := findAndParseTemplates(os.DirFS(PathTemplates), views.funcMap)
 
 					views.templates = templates // not thread safe but only used for local development
+
+					changed <- struct{}{}
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {

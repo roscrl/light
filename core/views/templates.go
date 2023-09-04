@@ -29,6 +29,8 @@ const (
 )
 
 type Views struct {
+	LocalBrowserRefreshNotify chan struct{}
+
 	env config.Environment
 
 	templates *template.Template
@@ -43,7 +45,8 @@ func New(env config.Environment) *Views {
 		templates := findAndParseTemplates(os.DirFS(PathTemplates), funcMap)
 
 		views.templates = templates
-		watchLocalTemplates(views)
+		views.LocalBrowserRefreshNotify = make(chan struct{})
+		watchLocalTemplates(views, views.LocalBrowserRefreshNotify)
 	} else {
 		tmplFS, err := fs.Sub(tmplFS, DirTemplates)
 		if err != nil {
@@ -55,16 +58,22 @@ func New(env config.Environment) *Views {
 		views.templates = templates
 	}
 
-	log.Println(views.templates.DefinedTemplates())
-
 	return views
 }
 
-func (v *Views) RenderPage(w io.Writer, name string, data any) {
+func (v *Views) RenderPage(w io.Writer, name string, data map[string]any) {
 	tmpl := template.Must(v.templates.Clone())
 
 	if v.env == config.LOCAL {
 		tmpl = template.Must(tmpl.ParseGlob(PathTemplates + "/" + name))
+
+		if data == nil {
+			data = map[string]any{
+				"local": true,
+			}
+		} else {
+			data["local"] = true
+		}
 	} else {
 		tmpl = template.Must(tmpl.ParseFS(tmplFS, DirTemplatesSlash+name))
 	}
@@ -90,9 +99,15 @@ func (v *Views) RenderErrorPage(w http.ResponseWriter, msg string, statusCode in
 	v.RenderPage(w, Error, map[string]any{"error": msg})
 }
 
-func (v *Views) RenderTurboStream(w http.ResponseWriter, name string, data any) {
+func (v *Views) RenderTurboStream(w http.ResponseWriter, name string, data map[string]any) {
 	w.Header().Set("Content-Type", TurboStreamMIME)
 	v.RenderPage(w, name, data)
+}
+
+func (v *Views) StopLocalBrowserRefreshChannelIfLocal() {
+	if v.env == config.LOCAL {
+		close(v.LocalBrowserRefreshNotify)
+	}
 }
 
 func findAndParseTemplates(filesys fs.FS, funcMap template.FuncMap) *template.Template {
