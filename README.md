@@ -48,9 +48,8 @@ gonew github.com/roscrl/light
 
 `gofumpt` formatting
 
-## Deploy
+## VPS Deploy
 
-Prefer to deploy on a [VPS](https://specbranch.com/posts/one-big-server/)
 - Search for `CHANGE_ME` in the codebase and replace with your own values
 
 #### VPS Setup
