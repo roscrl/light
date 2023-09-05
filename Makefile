@@ -43,7 +43,7 @@ generate: sqlc
 	./bin/esbuild core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.js --minify --outfile=core/views/assets/dist/js/vendor/turbo-7.3.0/dist/turbo.es2017-esm.min.js
 
 test:
-	go test --tags "$(BUILD_TAGS)" -v -race -cover ./... -coverprofile=bin/test-coverage.out
+	go test --tags "$(BUILD_TAGS)" -v -race -cover ./... -coverprofile=bin/test-coverage.out -coverpkg=./...
 	go tool cover -html=bin/test-coverage.out -o bin/test-coverage-report.html
 
 test-browser-slow:

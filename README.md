@@ -106,7 +106,6 @@ gonew github.com/roscrl/light
 
 - On PR, create a ephemeral preview environment with usage of Makefile VPS creation commands
 - On PR, performance testing should execute and attach a graph with ability to see performance changes overtime. `rod` for e2e? but `tests/bench` for individual endpoints
-- Combine coverage between browser tests + unit tests, investigate  https://go.dev/blog/integration-test-coverage
 - Code coverage + quality + unit test reports integrated to PR
 - `core/jobs` package for background jobs
 - `core/notify` package for sending notifications (email, sms, push, etc)
