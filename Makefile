@@ -53,7 +53,7 @@ run:
 	go run --tags "$(BUILD_TAGS)" . --config ./config/.local & make tailwind-watch
 
 run-mock:
-	go run --tags "$(BUILD_TAGS)" . --config ./config/.local.mock
+	go run --tags "$(BUILD_TAGS)" . --config ./config/.local.mock & make tailwind-watch
 
 output-schema:
 	sqlite3 $(SQLITE_PATH_DB) .schema > $(SQLITE_PATH_SCHEMA)
