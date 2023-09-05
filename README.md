@@ -115,3 +115,4 @@ gonew github.com/roscrl/light
 - Simplest possible auth solution
 - Replica to S3 for SQLite https://litestream.io
 - Tailwind css formatter/autocomplete plugin, not working for some reason on Intellij multiple tickets open on Intellij YouTrack
+- Session management https://github.com/alexedwards/scs

@@ -135,8 +135,10 @@ func (app *App) handleTodosSearch() http.HandlerFunc {
 		if query == "" {
 			todos, err = app.Qry.ReadTodos(rctx)
 		} else {
-			query = strings.TrimSuffix(query, "*")
-			todos, err = app.Qry.SearchTodos(rctx, query+"*")
+			query = strings.TrimSuffix(query, "%")
+			query = strings.TrimPrefix(query, "%")
+
+			todos, err = app.Qry.SearchTodos(rctx, "%"+query+"%")
 		}
 
 		if err != nil {

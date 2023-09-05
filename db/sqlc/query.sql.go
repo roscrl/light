@@ -81,11 +81,47 @@ const searchTodos = `-- name: SearchTodos :many
 SELECT t.id, t.task, t.status, t.created_at
 FROM todos t
          JOIN todos_search ts ON t.id = ts.id
-WHERE ts.task MATCH ?
+WHERE ts.task LIKE ?
+ORDER BY RANK LIMIT 20
 `
 
 func (q *Queries) SearchTodos(ctx context.Context, task string) ([]Todo, error) {
 	rows, err := q.db.QueryContext(ctx, searchTodos, task)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Todo
+	for rows.Next() {
+		var i Todo
+		if err := rows.Scan(
+			&i.ID,
+			&i.Task,
+			&i.Status,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchTodosOld = `-- name: SearchTodosOld :many
+SELECT t.id, t.task, t.status, t.created_at
+FROM todos t
+         JOIN todos_search ts ON t.id = ts.id
+WHERE ts.task MATCH ?
+`
+
+func (q *Queries) SearchTodosOld(ctx context.Context, task string) ([]Todo, error) {
+	rows, err := q.db.QueryContext(ctx, searchTodosOld, task)
 	if err != nil {
 		return nil, err
 	}

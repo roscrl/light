@@ -13,7 +13,7 @@ func (app *App) handleLocalBrowserRefresh() http.HandlerFunc {
 		rc := http.NewResponseController(w)
 
 		if err := rc.SetWriteDeadline(time.Time{}); err != nil {
-			log.Fatalf("failed to set write deadline: %v", err)
+			log.Fatalf("failed to set infinite write deadline: %v", err)
 		}
 
 		w.Header().Set("Content-Type", "text/event-stream")

@@ -19,8 +19,15 @@ SET task   = ?,
 WHERE id = ?
 RETURNING id, task, status, created_at;
 
+-- name: SearchTodosOld :many
+SELECT t.id, t.task, t.status, t.created_at
+FROM todos t
+         JOIN todos_search ts ON t.id = ts.id
+WHERE ts.task MATCH ?;
+
 -- name: SearchTodos :many
 SELECT t.id, t.task, t.status, t.created_at
 FROM todos t
          JOIN todos_search ts ON t.id = ts.id
-WHERE ts.task MATCH ?
+WHERE ts.task LIKE ?
+ORDER BY RANK LIMIT 20;

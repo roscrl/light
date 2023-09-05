@@ -1,4 +1,4 @@
-CREATE VIRTUAL TABLE todos_search USING fts5(id UNINDEXED, task);
+CREATE VIRTUAL TABLE todos_search USING fts5(id UNINDEXED, task, tokenize="trigram");
 
 INSERT INTO todos_search(id, task) SELECT id, task FROM todos;
 

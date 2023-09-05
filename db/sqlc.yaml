@@ -7,6 +7,7 @@ sql:
       uri: file:app.db
     rules:
       - sqlc/db-prepare
+    strict_order_by: false
     gen:
       go:
         package: "sqlc"
