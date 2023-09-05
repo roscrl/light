@@ -7,7 +7,7 @@ sql:
       uri: file:app.db
     rules:
       - sqlc/db-prepare
-    strict_order_by: false
+    strict_order_by: false # for SQLite fts5 ORDER BY RANK
     gen:
       go:
         package: "sqlc"
