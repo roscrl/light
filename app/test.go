@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/matryer/is"
+
 	"github.com/roscrl/light/config"
 )
 

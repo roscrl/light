@@ -45,7 +45,9 @@ linters-settings:
     sections:
       - Standard
       - Default
+      - Prefix(github.com/roscrl)
       - Prefix(github.com/)
+      - Blank
 
   gocritic:
     disabled-checks:

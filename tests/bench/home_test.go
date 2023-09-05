@@ -9,8 +9,9 @@ import (
 	"github.com/roscrl/light/app"
 	"github.com/roscrl/light/config"
 	"github.com/roscrl/light/core/helpers/ulid"
-	_ "github.com/roscrl/light/core/utils/testutil"
 	"github.com/roscrl/light/db"
+
+	_ "github.com/roscrl/light/core/utils/testutil"
 )
 
 func BenchmarkHome(b *testing.B) {

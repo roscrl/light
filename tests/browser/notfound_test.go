@@ -6,6 +6,7 @@ import (
 
 	"github.com/roscrl/light/app"
 	"github.com/roscrl/light/config"
+
 	_ "github.com/roscrl/light/core/utils/testutil"
 )
 

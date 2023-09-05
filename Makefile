@@ -32,7 +32,7 @@ lint:
 
 format:
 	gofumpt -extra -l -w . 										&& \
-	gci write -s standard -s default -s "prefix(github.com/)" .
+	gci write -s standard -s default -s "prefix(github.com/roscrl)" -s "prefix(github.com/)" -s blank .
 
 sqlc:
 	cd $(DB_FOLDER) && sqlc generate
