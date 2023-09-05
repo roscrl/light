@@ -2,7 +2,6 @@ package app
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/roscrl/light/core/helpers/rlog"
 	"github.com/roscrl/light/core/helpers/rlog/key"
@@ -135,9 +134,6 @@ func (app *App) handleTodosSearch() http.HandlerFunc {
 		if query == "" {
 			todos, err = app.Qry.ReadTodos(rctx)
 		} else {
-			query = strings.TrimSuffix(query, "%")
-			query = strings.TrimPrefix(query, "%")
-
 			todos, err = app.Qry.SearchTodos(rctx, "%"+query+"%")
 		}
 
