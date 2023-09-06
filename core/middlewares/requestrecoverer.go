@@ -6,11 +6,10 @@ import (
 
 	"github.com/roscrl/light/core/helpers/rlog"
 	"github.com/roscrl/light/core/helpers/rlog/key"
-	"github.com/roscrl/light/core/utils/contextutil"
 )
 
-func RequestRecoverer(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func RequestRecoverer(next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if recovery := recover(); recovery != nil {
 				var err error
@@ -26,11 +25,9 @@ func RequestRecoverer(next http.Handler) http.Handler {
 				log, rctx := rlog.L(r)
 				log.ErrorContext(rctx, "panic", key.Err, err)
 
-				requestID := contextutil.RequestID(r)
-
-				http.Error(w, "internal server error "+requestID, http.StatusInternalServerError)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
 		}()
 		next.ServeHTTP(w, r)
-	})
+	}
 }

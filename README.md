@@ -65,6 +65,7 @@ gonew github.com/roscrl/light
 - Create a 15 year 'Origin Certificate' and place in `config/public.pem` & `config/private.pem`
 - Enable Rate Limiting
   - `(http.request.uri.path contains "/")` 50 requests per 10s
+  - TODO: Also add rate limiting to Caddy as is not an application concern
 - Enable [Bot Fight Mode](https://developers.cloudflare.com/bots/get-started/free/)
 - Enable Page Rules Caching to respect `Cache-Control` headers returned
   - playlistvote.com/* Cache Level: Cache Everything
@@ -116,3 +117,4 @@ gonew github.com/roscrl/light
 - Tailwind css formatter/autocomplete plugin, not working for some reason on Intellij multiple tickets open on Intellij YouTrack
 - Session management https://github.com/alexedwards/scs
 - Investigate https://www.sqlite.org/spellfix1.html
+- https://docs.gitlab.com/ee/ci/testing/ 

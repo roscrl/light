@@ -9,10 +9,10 @@ import (
 	"github.com/roscrl/light/core/utils/contextutil"
 )
 
-func RequestID(next http.Handler) http.Handler {
+func RequestID(next http.Handler) http.HandlerFunc {
 	const requestIDSize = 8
 
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		bytes := make([]byte, requestIDSize)
 		if _, err := rand.Read(bytes); err != nil {
 			bytes = []byte("00000000")
@@ -23,5 +23,5 @@ func RequestID(next http.Handler) http.Handler {
 		rctx := context.WithValue(r.Context(), contextutil.RequestIDKey{}, requestID)
 
 		next.ServeHTTP(w, r.WithContext(rctx))
-	})
+	}
 }

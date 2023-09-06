@@ -63,9 +63,9 @@ func NewApp(cfg *config.App) *App {
 
 	app.HTTPServer = &http.Server{
 		Handler:      app.Router,
-		ReadTimeout:  5 * time.Second,
+		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 35 * time.Second,
-		IdleTimeout:  15 * time.Second,
+		IdleTimeout:  time.Minute,
 	}
 
 	return app

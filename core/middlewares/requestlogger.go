@@ -10,8 +10,8 @@ import (
 	"github.com/roscrl/light/core/utils/contextutil"
 )
 
-func RequestLogger(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func RequestLogger(next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		textHandler := slog.NewTextHandler(os.Stdout, nil)
 		requestContextHandler := rlog.ContextRequestHandler{
 			Handler: textHandler,
@@ -22,5 +22,5 @@ func RequestLogger(next http.Handler) http.Handler {
 		rctx := context.WithValue(r.Context(), contextutil.RequestLoggerKey{}, log)
 
 		next.ServeHTTP(w, r.WithContext(rctx))
-	})
+	}
 }

@@ -90,7 +90,7 @@ func (app *App) routes() http.Handler {
 		routes = append(routes, newRoute(http.MethodGet, RouteLocalBrowserRefresh, app.handleLocalBrowserRefresh()))
 	}
 
-	middlewares := []func(http.Handler) http.Handler{
+	middlewares := []func(http.Handler) http.HandlerFunc{
 		middlewares.RequestLogger,
 		middlewares.RequestPath,
 		middlewares.RequestID,

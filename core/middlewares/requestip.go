@@ -33,8 +33,8 @@ var (
 // values from the client, or if you use this middleware without a reverse
 // proxy, malicious clients will be able to make you very sad (or, depending on
 // how you're using RemoteAddr, vulnerable to an attack of some sort).
-func RequestIP(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func RequestIP(h http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		if rip := requestIP(r); rip != "" {
 			r.RemoteAddr = rip
 
@@ -43,7 +43,7 @@ func RequestIP(h http.Handler) http.Handler {
 		} else {
 			h.ServeHTTP(w, r)
 		}
-	})
+	}
 }
 
 func requestIP(r *http.Request) string {
