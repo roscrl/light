@@ -119,6 +119,7 @@ func (app *App) handleTodosUpdate() http.HandlerFunc {
 
 func (app *App) handleTodosDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO example delete job here
 		//log, rctx := rlog.L(r)
 		//
 		//todoID := getField(r, 0)
