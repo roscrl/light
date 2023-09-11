@@ -108,7 +108,6 @@ gonew github.com/roscrl/light
 - On PR, create a ephemeral preview environment with usage of Makefile VPS creation commands
 - On PR, performance testing should execute and attach a graph with ability to see performance changes overtime. `rod` for e2e? but `tests/bench` for individual endpoints
 - Code coverage + quality + unit test reports integrated to PR
-- `core/jobs` package for background jobs
 - `core/notify` package for sending notifications (email, sms, push, etc)
 - E2E testing of VPS deployment as CI/CD workflow
 - Load testing https://shane.ai/posts/load-testing-tips/
