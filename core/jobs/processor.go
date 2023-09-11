@@ -30,7 +30,7 @@ type Processor struct {
 
 	JobNameToJobFuncRegistry JobNameToJobFuncRegistry
 
-	JobsInFlightWaitGroup sync.WaitGroup
+	JobsInFlight sync.WaitGroup
 
 	// JobFinished is a channel that is sent the ID of a job
 	// when it is finished processing. This is useful for testing
@@ -59,7 +59,7 @@ func (p *Processor) StartJobLoop(ctx context.Context) {
 		case <-ctx.Done():
 			p.Log.Info("context done, waiting for any remaining jobs to finish", "ctx", ctx.Err())
 
-			p.JobsInFlightWaitGroup.Wait()
+			p.JobsInFlight.Wait()
 			p.Log.Info("all jobs finished, exiting job loop")
 
 			return
@@ -107,11 +107,11 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 			}
 		}
 
-		p.JobsInFlightWaitGroup.Add(1)
+		p.JobsInFlight.Add(1)
 
 		go func(log *slog.Logger, job *sqlc.GetPendingJobsRow) {
 			defer func() {
-				p.JobsInFlightWaitGroup.Done()
+				p.JobsInFlight.Done()
 
 				select {
 				case p.JobFinished <- job.ID:
