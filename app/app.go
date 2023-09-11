@@ -93,7 +93,7 @@ func (app *App) Start() error {
 			if errors.As(err, &opErr) && opErr.Op == "accept" {
 				app.Log.Info("server shut down")
 			} else {
-				log.Fatal("failed to stop server: ", err)
+				log.Fatalf("failed to stop server: %v", err)
 			}
 		}
 	}()

@@ -10,28 +10,28 @@ import (
 	"database/sql"
 )
 
-const getPendingJobs = `-- name: GetPendingJobs :many
+const getOverdueJobsFromTime = `-- name: GetOverdueJobsFromTime :many
 SELECT id, name, arguments, run_at
 FROM jobs
 WHERE run_at <= ?1 AND status = 'pending'
 `
 
-type GetPendingJobsRow struct {
+type GetOverdueJobsFromTimeRow struct {
 	ID        string
 	Name      string
 	Arguments string
 	RunAt     int64
 }
 
-func (q *Queries) GetPendingJobs(ctx context.Context, from int64) ([]GetPendingJobsRow, error) {
-	rows, err := q.db.QueryContext(ctx, getPendingJobs, from)
+func (q *Queries) GetOverdueJobsFromTime(ctx context.Context, from int64) ([]GetOverdueJobsFromTimeRow, error) {
+	rows, err := q.db.QueryContext(ctx, getOverdueJobsFromTime, from)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetPendingJobsRow
+	var items []GetOverdueJobsFromTimeRow
 	for rows.Next() {
-		var i GetPendingJobsRow
+		var i GetOverdueJobsFromTimeRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,

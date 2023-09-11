@@ -69,7 +69,7 @@ func (p *Processor) StartJobLoop(ctx context.Context) {
 }
 
 func (p *Processor) processDueJobs(ctx context.Context) error {
-	jobs, err := p.Qry.GetPendingJobs(ctx, time.Now().Unix())
+	jobs, err := p.Qry.GetOverdueJobsFromTime(ctx, time.Now().Unix())
 	if err != nil {
 		return fmt.Errorf("getting db pending jobs: %w", err)
 	}
@@ -83,6 +83,18 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 		jobFunc := p.JobNameToJobFuncRegistry[JobName(job.Name)]
 		if jobFunc == nil {
 			log.Error("attempted to run due job but no matching job function found")
+
+			failedJobParams := sqlc.SetFailedJobParams{
+				FailedMessage: sql.NullString{
+					String: err.Error(),
+					Valid:  true,
+				},
+				ID: job.ID,
+			}
+
+			if err = p.Qry.SetFailedJob(ctx, failedJobParams); err != nil {
+				log.Error("setting db job status to failed with failure message", key.Err, err)
+			}
 
 			continue
 		}

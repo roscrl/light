@@ -9,7 +9,6 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17
 	go.uber.org/goleak v1.2.1
 	golang.org/x/text v0.12.0
-	golang.org/x/time v0.3.0
 )
 
 require (

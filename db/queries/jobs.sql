@@ -2,7 +2,7 @@
 INSERT INTO jobs (id, name, run_at, arguments)
 VALUES (?, ?, ?, ?);
 
--- name: GetPendingJobs :many
+-- name: GetOverdueJobsFromTime :many
 SELECT id, name, arguments, run_at
 FROM jobs
 WHERE run_at <= @from AND status = 'pending';
