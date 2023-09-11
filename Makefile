@@ -55,7 +55,7 @@ run:
 run-mock:
 	go run --tags "$(BUILD_TAGS)" . --config ./config/.local.mock & make tailwind-watch
 
-output-schema:
+schema:
 	sqlite3 $(SQLITE_PATH_DB) .schema > $(SQLITE_PATH_SCHEMA)
 
 vacuum:
@@ -63,6 +63,9 @@ vacuum:
 
 tailwind-watch:
 	./bin/tailwindcss -i ./core/views/assets/main.css -o ./core/views/assets/dist/main.css --watch --config ./config/tailwind.config.js
+
+mailpit:
+	./bin/mailpit
 
 bench:
 	go test --tags "$(BUILD_TAGS)" -run=XXX -bench=. ./... | tee bin/bench.txt
@@ -187,10 +190,10 @@ tools:
 	go install mvdan.cc/gofumpt@v0.5.0
 	go install github.com/daixiang0/gci@v0.11.0
 	go install golang.org/x/vuln/cmd/govulncheck@v1.0.1
-	go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.20.0
+	go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.21.0
 	mkdir -p ./bin/
 	make tools-esbuild
-	make tools-tailwind
+	make tools-other
 	echo "Remember to install Zig for the built-in C cross-compiler to Linux (or any C compiler for the 'make build' targets)"
 
 tools-esbuild:
@@ -200,30 +203,46 @@ tools-esbuild:
 UNAME_S := $(shell uname -s)
 UNAME_M := $(shell uname -m)
 
-tools-tailwind:
+tools-other:
 ifeq ($(UNAME_S), Darwin)
 ifeq ($(UNAME_M), arm64)
-	# MacOS ARM specific
+	# MacOS ARM64
 	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.3/tailwindcss-macos-arm64
 	chmod +x tailwindcss-macos-arm64
 	mv tailwindcss-macos-arm64 tailwindcss
 	mv tailwindcss ./bin/
+
+	curl -sLO https://github.com/axllent/mailpit/releases/download/v1.8.4/mailpit-darwin-arm64.tar.gz
+	tar -xzvf mailpit-darwin-arm64.tar.gz -C ./bin
+	rm ./bin/README.md ./bin/LICENSE
 else
-	# MacOS x64 specific (assuming this URL exists, update accordingly)
+	# MacOS x64
 	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.3/tailwindcss-macos-x64
 	chmod +x tailwindcss-macos-x64
 	mv tailwindcss-macos-x64 tailwindcss
 	mv tailwindcss ./bin/
+
+	curl -sLO https://github.com/axllent/mailpit/releases/download/v1.8.4/mailpit-darwin-amd64.tar.gz
+	tar -xzvf mailpit-darwin-arm64.tar.gz -C ./bin
+	rm ./bin/README.md ./bin/LICENSE
 endif
 else ifeq ($(OS), Windows_NT)
-	# Windows specific
+	# Windows x64
 	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.3/tailwindcss-windows-x64.exe
 	mv tailwindcss-windows-x64.exe tailwindcss.exe
 	mv tailwindcss.exe ./bin/
+
+	curl -sLO https://github.com/axllent/mailpit/releases/download/v1.8.4/mailpit-windows-amd64.zip
+	tar -xzvf mailpit-darwin-arm64.tar.gz -C ./bin
+	rm ./bin/README.md ./bin/LICENSE
 else
-	# Assuming Linux x64 by default, update with the correct URL
+	# Linux x64 default
 	curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v3.3.3/tailwindcss-linux-x64
 	chmod +x tailwindcss-linux-x64
 	mv tailwindcss-linux-x64 tailwindcss
 	mv tailwindcss ./bin/
+
+	curl -sLO https://github.com/axllent/mailpit/releases/download/v1.8.4/mailpit-linux-amd64.tar.gz
+	tar -xzvf mailpit-darwin-arm64.tar.gz -C ./bin
+	rm ./bin/README.md ./bin/LICENSE
 endif

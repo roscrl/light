@@ -13,7 +13,7 @@ func (app *App) handleHome() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log, rctx := rlog.L(r)
 
-		todos, err := app.Qry.ReadTodos(rctx)
+		todos, err := app.Qry.GetAllTodos(rctx)
 		if err != nil {
 			log.ErrorContext(rctx, "failed to query for todos", key.Err, err)
 			app.Views.RenderDefaultErrorPage(w)

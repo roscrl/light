@@ -2,7 +2,7 @@ version: "2"
 sql:
   - engine: "sqlite"
     schema: "schema.sql"
-    queries: "query.sql"
+    queries: "./queries"
     database:
       uri: file:app.db
     rules:

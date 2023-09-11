@@ -12,10 +12,6 @@ import (
 	_ "github.com/mattn/go-sqlite3" // sqlite3 driver
 )
 
-const (
-	TodosTable = "todos"
-)
-
 var PathMigrations = ""
 
 func init() {
@@ -29,6 +25,8 @@ func New(dataSource string) *sql.DB {
 		log.Fatal(err)
 	}
 
+	db.SetMaxOpenConns(1)
+
 	err = setPragmas(db)
 	if err != nil {
 		log.Fatal(err)
@@ -37,15 +35,15 @@ func New(dataSource string) *sql.DB {
 	return db
 }
 
-func RunMigrations(db *sql.DB, pathMigrations string) {
-	migrationsDir, err := os.ReadDir(pathMigrations)
+func RunMigrations(db *sql.DB) {
+	migrationsDir, err := os.ReadDir(PathMigrations)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, file := range migrationsDir {
 		if strings.HasSuffix(file.Name(), ".sql") {
-			pathMigrationSQL := filepath.Join(pathMigrations, file.Name())
+			pathMigrationSQL := filepath.Join(PathMigrations, file.Name())
 
 			migration, err := os.ReadFile(pathMigrationSQL)
 			if err != nil {

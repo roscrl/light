@@ -27,13 +27,13 @@ func (app *App) handleTodosCreate() http.HandlerFunc {
 			return
 		}
 
-		todo := sqlc.CreateTodoParams{
+		todo := sqlc.NewTodoParams{
 			ID:     ulid.NewString(),
 			Task:   task,
 			Status: string(todo.Pending),
 		}
 
-		_, err := app.Qry.CreateTodo(rctx, todo)
+		_, err := app.Qry.NewTodo(rctx, todo)
 		if err != nil {
 			log.ErrorContext(rctx, "failed to create todo", key.Err, err)
 			app.Views.RenderTurboStream(w, views.TodoFormNewStream, map[string]any{
@@ -56,7 +56,7 @@ func (app *App) handleTodosEdit() http.HandlerFunc {
 
 		id := getField(r, 0)
 
-		todo, err := app.Qry.ReadTodo(rctx, id)
+		todo, err := app.Qry.GetTodoByID(rctx, id)
 		if err != nil {
 			log.InfoContext(rctx, "failed to get todo", key.ID, id, key.Err, err)
 			app.Views.RenderDefaultErrorPage(w)
@@ -81,7 +81,7 @@ func (app *App) handleTodosUpdate() http.HandlerFunc {
 
 		todoID := getField(r, 0)
 
-		existingTodo, err := app.Qry.ReadTodo(rctx, todoID)
+		existingTodo, err := app.Qry.GetTodoByID(rctx, todoID)
 		if err != nil {
 			app.Views.RenderDefaultErrorPage(w)
 
@@ -100,7 +100,7 @@ func (app *App) handleTodosUpdate() http.HandlerFunc {
 			task = existingTodo.Task
 		}
 
-		updatedTodo, err := app.Qry.UpdateTodo(rctx, sqlc.UpdateTodoParams{
+		updatedTodo, err := app.Qry.UpdateTodoByID(rctx, sqlc.UpdateTodoByIDParams{
 			ID:     todoID,
 			Task:   task,
 			Status: status,
@@ -114,6 +114,21 @@ func (app *App) handleTodosUpdate() http.HandlerFunc {
 		app.Views.RenderTurboStream(w, views.TodoCardUpdateStream, map[string]any{
 			params.Todo: updatedTodo,
 		})
+	}
+}
+
+func (app *App) handleTodosDelete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		//log, rctx := rlog.L(r)
+		//
+		//todoID := getField(r, 0)
+
+		//if err := jobs.Enqueue(rctx, jobs.TodoDelete, tododelete.Args(todoID), app.Qry); err != nil {
+		//	log.ErrorContext(rctx, "failed to enqueue job", key.Err, err)
+		//	app.Views.RenderDefaultErrorPage(w)
+		//
+		//	return
+		//}
 	}
 }
 
@@ -132,9 +147,9 @@ func (app *App) handleTodosSearch() http.HandlerFunc {
 
 		query := r.FormValue(formQuery)
 		if query == "" {
-			todos, err = app.Qry.ReadTodos(rctx)
+			todos, err = app.Qry.GetAllTodos(rctx)
 		} else {
-			todos, err = app.Qry.SearchTodos(rctx, "%"+query+"%")
+			todos, err = app.Qry.SearchTodosByTask(rctx, "%"+query+"%")
 		}
 
 		if err != nil {

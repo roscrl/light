@@ -44,7 +44,7 @@ gonew github.com/roscrl/light
 
 #### Development
 
-`sqlc` generate Go code from [SQL queries](db/query.sql)
+`sqlc` generate Go code from [SQL queries](db/queries/todos.sql)
 
 `is` test assertions
 

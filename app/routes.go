@@ -16,6 +16,7 @@ const (
 	RouteTodosCreate = "/todos/create"
 	RouteTodosEdit   = "/todos/(.*)/edit"
 	RouteTodosUpdate = "/todos/(.*)/update"
+	RouteTodosDelete = "/todos/(.*)/delete"
 	RouteTodosSearch = "/todos/search(.*)"
 
 	RouteHealth            = "/health"
@@ -55,6 +56,7 @@ func (app *App) routes() http.Handler {
 			newRoute(http.MethodPost, RouteTodosCreate, app.handleTodosCreate()),
 			newRoute(http.MethodGet, RouteTodosEdit, app.handleTodosEdit()),
 			newRoute(http.MethodPost, RouteTodosUpdate, app.handleTodosUpdate()),
+			newRoute(http.MethodPost, RouteTodosDelete, app.handleTodosDelete()),
 			newRoute(http.MethodGet, RouteTodosSearch, app.handleTodosSearch()),
 		}
 

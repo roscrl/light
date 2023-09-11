@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
@@ -24,7 +25,9 @@ func Bootstrap() {
 		cfg = config.NewFromCustomConfig(configPath)
 	}
 
-	app := app.NewApp(cfg)
+	ctx, cancel := context.WithCancel(context.Background())
+
+	app := app.NewApp(ctx, cfg)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
@@ -34,6 +37,8 @@ func Bootstrap() {
 	}
 
 	<-stop
+
+	cancel()
 
 	if err := app.Stop(); err != nil {
 		log.Fatalf("failed to stop app: %v", err)

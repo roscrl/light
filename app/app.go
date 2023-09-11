@@ -14,6 +14,7 @@ import (
 	"github.com/roscrl/light/config"
 	"github.com/roscrl/light/core/helpers/rlog"
 	"github.com/roscrl/light/core/helpers/rlog/key"
+	"github.com/roscrl/light/core/jobs"
 	"github.com/roscrl/light/core/views"
 	"github.com/roscrl/light/db"
 	"github.com/roscrl/light/db/sqlc"
@@ -30,6 +31,8 @@ type App struct {
 
 	Client *http.Client
 
+	Jobs *jobs.Processor
+
 	Router   http.Handler
 	Listener net.Listener
 	Port     string
@@ -38,7 +41,7 @@ type App struct {
 }
 
 //nolint:gomnd
-func NewApp(cfg *config.App) *App {
+func NewApp(ctx context.Context, cfg *config.App) *App {
 	cfg.FrontendDistFS = views.FrontendDistFS
 	cfg.MustValidate()
 
@@ -57,7 +60,7 @@ func NewApp(cfg *config.App) *App {
 		Timeout: 10 * time.Second,
 	}
 
-	app.services()
+	app.services(ctx)
 
 	app.Router = app.routes()
 

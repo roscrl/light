@@ -20,14 +20,13 @@ func TestHome(t *testing.T) {
 	t.Parallel()
 
 	cfg := config.NewTestConfig()
-	cfg.SqliteDBPath = fmt.Sprintf("file:%s?mode=memory&cache=shared", ulid.NewString())
+	cfg.SqliteDBPath = fmt.Sprintf("file:%s?mode=memory", ulid.NewString())
 
-	is, app := app.NewStartedTestAppWithCleanup(t, cfg)
+	is, app := app.NewStartedAppWithCleanup(t, cfg)
+	db.RunMigrations(app.DB)
 
 	todoID1, todoID2 := ulid.NewString(), ulid.NewString()
-	{ // migrate and seed in memory database
-		db.RunMigrations(app.DB, db.PathMigrations)
-
+	{ // seed
 		_, err := app.DB.Exec("INSERT INTO todos (id, task, status) VALUES (?, ?, ?)", todoID1, "important todo!", "pending")
 		is.NoErr(err)
 
@@ -127,14 +126,13 @@ func TestHomeSearch(t *testing.T) {
 	t.Parallel()
 
 	cfg := config.NewTestConfig()
-	cfg.SqliteDBPath = fmt.Sprintf("file:%s?mode=memory&cache=shared", ulid.NewString())
+	cfg.SqliteDBPath = fmt.Sprintf("file:%s?mode=memory", ulid.NewString())
 
-	is, app := app.NewStartedTestAppWithCleanup(t, cfg)
+	is, app := app.NewStartedAppWithCleanup(t, cfg)
+	db.RunMigrations(app.DB)
 
 	todoID1, todoID2 := ulid.NewString(), ulid.NewString()
-	{ // migrate and seed in memory database
-		db.RunMigrations(app.DB, db.PathMigrations)
-
+	{ // seed
 		_, err := app.DB.Exec("INSERT INTO todos (id, task, status) VALUES (?, ?, ?)", todoID1, "important todo!", "pending")
 		is.NoErr(err)
 

@@ -2,7 +2,10 @@ package key
 
 const (
 	ID   = "id"
-	Todo = "todo"
+	Name = "name"
+
+	Count = "count"
+	RunAt = "run_at"
 
 	Err  = "error"
 	Took = "took"

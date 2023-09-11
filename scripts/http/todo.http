@@ -1,8 +1,13 @@
-###
+### Todo Create
 POST http://localhost:8080/todos/create
 Accept: text/vnd.turbo-stream.html
 Content-Type: application/x-www-form-urlencoded
 
-###
+### Todo Delete
+POST http://localhost:8080/todos/1/delete
+Accept: text/vnd.turbo-stream.html
+Content-Type: application/x-www-form-urlencoded
+
+### Todos Search
 GET http://localhost:8080/todos/search?query=new
 Accept: text/vnd.turbo-stream.html
