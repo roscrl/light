@@ -109,7 +109,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 
 		p.JobsInFlight.Add(1)
 
-		go func(log *slog.Logger, job *sqlc.GetPendingJobsRow) {
+		go func(log *slog.Logger, job *sqlc.GetPendingJobsRow, args map[string]any) {
 			defer func() {
 				p.JobsInFlight.Done()
 
@@ -177,7 +177,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 
 				return
 			}
-		}(log, &job)
+		}(log, &job, args)
 	}
 
 	return nil
