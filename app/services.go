@@ -9,14 +9,14 @@ import (
 
 //nolint:revive,staticcheck,gocritic,wsl
 func (app *App) services(ctx context.Context) {
-	app.Jobs = &jobs.Processor{
+	app.JobsProcessor = &jobs.Processor{
 		Qry:                      app.Qry,
 		Interval:                 time.Second * 5,
 		Log:                      app.Log,
 		JobNameToJobFuncRegistry: jobs.DefaultRegistry(),
 	}
 
-	go app.Jobs.StartJobLoop(ctx)
+	go app.JobsProcessor.StartJobLoop(ctx)
 
 	if app.Cfg.Mocking {
 		// mockedServices

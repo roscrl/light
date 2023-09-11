@@ -31,7 +31,7 @@ type App struct {
 
 	Client *http.Client
 
-	Jobs *jobs.Processor
+	JobsProcessor *jobs.Processor
 
 	Router   http.Handler
 	Listener net.Listener
