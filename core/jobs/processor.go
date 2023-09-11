@@ -28,7 +28,7 @@ type Processor struct {
 	Interval time.Duration
 	Log      *slog.Logger
 
-	JobRegistry Registry
+	JobNameToJobFuncRegistry JobNameToJobFuncRegistry
 
 	JobsInFlightWaitGroup sync.WaitGroup
 
@@ -79,7 +79,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 		log := p.Log.WithGroup(keygroup.Job)
 		log = log.With(key.ID, job.ID, key.Name, job.Name, key.RunAt, job.RunAt)
 
-		jobFunc := p.JobRegistry[JobName(job.Name)]
+		jobFunc := p.JobNameToJobFuncRegistry[JobName(job.Name)]
 		if jobFunc == nil {
 			log.Error("attempted to run due job but no matching job function found")
 

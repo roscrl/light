@@ -10,10 +10,10 @@ import (
 //nolint:revive,staticcheck,gocritic,wsl
 func (app *App) services(ctx context.Context) {
 	app.Jobs = &jobs.Processor{
-		Qry:         app.Qry,
-		Interval:    time.Second * 5,
-		Log:         app.Log,
-		JobRegistry: jobs.DefaultRegistry(),
+		Qry:                      app.Qry,
+		Interval:                 time.Second * 5,
+		Log:                      app.Log,
+		JobNameToJobFuncRegistry: jobs.DefaultRegistry(),
 	}
 
 	go app.Jobs.StartJobLoop(ctx)

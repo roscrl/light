@@ -6,13 +6,13 @@ type JobName string
 
 type JobFunc func(args map[string]any) error
 
-type Registry map[JobName]JobFunc
+type JobNameToJobFuncRegistry map[JobName]JobFunc
 
 const (
 	TodoDelete JobName = "todo_delete"
 )
 
-func DefaultRegistry() Registry {
+func DefaultRegistry() JobNameToJobFuncRegistry {
 	return map[JobName]JobFunc{
 		TodoDelete: tododelete.Run,
 	}

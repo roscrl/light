@@ -25,7 +25,7 @@ func TestProcessorOneJob(t *testing.T) {
 		Interval:    time.Millisecond * 100,
 		Log:         slog.Default(),
 		JobFinished: make(chan string),
-		JobRegistry: Registry{
+		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
 			testJob: func(args map[string]any) error {
 				log.Println("test job!")
 
@@ -60,7 +60,7 @@ func TestProcessorMultipleJobs(t *testing.T) {
 		Interval:    time.Millisecond * 100,
 		Log:         slog.Default(),
 		JobFinished: make(chan string),
-		JobRegistry: Registry{
+		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
 			testJob: func(args map[string]any) error {
 				is.Equal(args["hello"], "world!")
 
@@ -118,7 +118,7 @@ func TestProcessorPanic(t *testing.T) {
 		Interval:    time.Millisecond * 100,
 		Log:         slog.Default(),
 		JobFinished: make(chan string),
-		JobRegistry: Registry{
+		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
 			testJob: func(args map[string]any) error {
 				panic("job panic!")
 			},
