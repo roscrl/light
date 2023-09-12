@@ -25,3 +25,7 @@ FROM todos t
          JOIN todos_search ts ON t.id = ts.id
 WHERE ts.task LIKE ?
 ORDER BY RANK LIMIT 20;
+
+-- name: DeleteTodoByID :exec
+DELETE FROM todos
+WHERE id = ?;

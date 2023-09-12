@@ -11,6 +11,7 @@ import (
 
 	"github.com/roscrl/light/core/helpers/rlog/key"
 	"github.com/roscrl/light/core/helpers/rlog/keygroup"
+	"github.com/roscrl/light/core/jobs/scope"
 	"github.com/roscrl/light/db/sqlc"
 )
 
@@ -45,14 +46,14 @@ type Processor struct {
 // column is in the past and its status is pending. The loop runs every
 // Interval duration. So there is a possibility that a job is not run
 // at the exact time it is due, but it will be run on the next loop.
-func (p *Processor) StartJobLoop(ctx context.Context) {
+func (p *Processor) StartJobLoop(ctx context.Context, jobScope *scope.Job) {
 	ticker := time.NewTicker(p.Interval)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ticker.C:
-			err := p.processDueJobs(ctx)
+			err := p.processDueJobs(ctx, jobScope)
 			if err != nil {
 				p.Log.Error("processing due jobs", key.Err, err)
 			}
@@ -68,8 +69,8 @@ func (p *Processor) StartJobLoop(ctx context.Context) {
 	}
 }
 
-func (p *Processor) processDueJobs(ctx context.Context) error {
-	jobs, err := p.Qry.GetOverdueJobsFromTime(ctx, time.Now().Unix())
+func (p *Processor) processDueJobs(ctx context.Context, jobScope *scope.Job) error {
+	jobs, err := p.Qry.GetOverduePendingJobsFromTime(ctx, time.Now().Unix())
 	if err != nil {
 		return fmt.Errorf("getting db pending jobs: %w", err)
 	}
@@ -82,7 +83,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 
 		jobFunc := p.JobNameToJobFuncRegistry[JobName(job.Name)]
 		if jobFunc == nil {
-			log.Error("attempted to run due job but no matching job function found")
+			log.ErrorContext(ctx, "attempted to run due job but no matching job function found")
 
 			failedJobParams := sqlc.SetFailedJobParams{
 				FailedMessage: sql.NullString{
@@ -93,7 +94,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 			}
 
 			if err = p.Qry.SetFailedJob(ctx, failedJobParams); err != nil {
-				log.Error("setting db job status to failed with failure message", key.Err, err)
+				log.ErrorContext(ctx, "setting db job status to failed with failure message", key.Err, err)
 			}
 
 			continue
@@ -102,7 +103,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 		var args map[string]any
 		if job.Arguments != "" {
 			if err := json.Unmarshal([]byte(job.Arguments), &args); err != nil {
-				log.Error("unmarshalling job arguments", key.Err, err)
+				log.ErrorContext(ctx, "unmarshalling job arguments", key.Err, err)
 
 				failedJobParams := sqlc.SetFailedJobParams{
 					FailedMessage: sql.NullString{
@@ -142,7 +143,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 						err = fmt.Errorf("unknown panic: %v", panicType)
 					}
 
-					log.Error("panic during job processing", key.Err, err)
+					log.ErrorContext(ctx, "panic during job processing", key.Err, err)
 
 					failedJobParams := sqlc.SetFailedJobParams{
 						FailedMessage: sql.NullString{
@@ -153,7 +154,7 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 					}
 
 					if err := p.Qry.SetFailedJob(ctx, failedJobParams); err != nil {
-						log.Error("setting db job status to failed with failure message", key.Err, err)
+						log.ErrorContext(ctx, "setting db job status to failed with failure message", key.Err, err)
 
 						return
 					}
@@ -161,14 +162,14 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 			}()
 
 			if err := p.Qry.SetJobStatusToRunning(ctx, job.ID); err != nil {
-				log.Error("setting db job status to running", key.Err, err)
+				log.ErrorContext(ctx, "setting db job status to running", key.Err, err)
 
 				return
 			}
 
-			err := jobFunc(args)
+			err := jobFunc(ctx, jobScope, args)
 			if err != nil {
-				log.Error("job failed", key.Err, err)
+				log.ErrorContext(ctx, "job failed", key.Err, err)
 
 				failedJobParams := sqlc.SetFailedJobParams{
 					FailedMessage: sql.NullString{
@@ -179,14 +180,14 @@ func (p *Processor) processDueJobs(ctx context.Context) error {
 				}
 
 				if err := p.Qry.SetFailedJob(ctx, failedJobParams); err != nil {
-					log.Error("setting db job status to failed with failure message", key.Err, err)
-
-					return
+					log.ErrorContext(ctx, "setting db job status to failed with failure message", key.Err, err)
 				}
+
+				return
 			}
 
 			if err := p.Qry.SetSuccessfulJob(ctx, job.ID); err != nil {
-				log.Error("setting db job status to success", key.Err, err)
+				log.ErrorContext(ctx, "setting db job status to success", key.Err, err)
 
 				return
 			}

@@ -9,6 +9,7 @@ import (
 
 	"github.com/matryer/is"
 
+	"github.com/roscrl/light/core/jobs/scope"
 	"github.com/roscrl/light/db"
 )
 
@@ -26,7 +27,7 @@ func TestProcessorOneJob(t *testing.T) {
 		Log:         slog.Default(),
 		JobFinished: make(chan string),
 		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
-			testJob: func(args map[string]any) error {
+			testJob: func(ctx context.Context, jobScope *scope.Job, args map[string]any) error {
 				log.Println("test job!")
 
 				return nil
@@ -37,7 +38,7 @@ func TestProcessorOneJob(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go processor.StartJobLoop(ctx)
+	go processor.StartJobLoop(ctx, &scope.Job{})
 
 	enqueuedJobID, err := Enqueue(ctx, testJob, nil, qry)
 	is.NoErr(err)
@@ -61,14 +62,14 @@ func TestProcessorMultipleJobs(t *testing.T) {
 		Log:         slog.Default(),
 		JobFinished: make(chan string),
 		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
-			testJob: func(args map[string]any) error {
+			testJob: func(ctx context.Context, jobScope *scope.Job, args map[string]any) error {
 				is.Equal(args["hello"], "world!")
 
 				log.Println("test job!", args["hello"])
 
 				return nil
 			},
-			testJob2: func(args map[string]any) error {
+			testJob2: func(ctx context.Context, jobScope *scope.Job, args map[string]any) error {
 				log.Println("test job 2!")
 
 				return nil
@@ -79,7 +80,7 @@ func TestProcessorMultipleJobs(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go processor.StartJobLoop(ctx)
+	go processor.StartJobLoop(ctx, &scope.Job{})
 
 	enqueuedJobID1, err := Enqueue(ctx, testJob, map[string]any{
 		"hello": "world!",
@@ -119,7 +120,7 @@ func TestProcessorPanic(t *testing.T) {
 		Log:         slog.Default(),
 		JobFinished: make(chan string),
 		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
-			testJob: func(args map[string]any) error {
+			testJob: func(ctx context.Context, jobScope *scope.Job, args map[string]any) error {
 				panic("job panic!")
 			},
 		},
@@ -128,7 +129,7 @@ func TestProcessorPanic(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go processor.StartJobLoop(ctx)
+	go processor.StartJobLoop(ctx, &scope.Job{})
 
 	enqueuedJobID, err := Enqueue(ctx, testJob, nil, qry)
 	is.NoErr(err)

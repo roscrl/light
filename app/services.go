@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/roscrl/light/core/jobs"
+	"github.com/roscrl/light/core/jobs/scope"
 )
 
 //nolint:revive,staticcheck,gocritic,wsl
@@ -16,7 +17,16 @@ func (app *App) services(ctx context.Context) {
 		JobNameToJobFuncRegistry: jobs.DefaultRegistry(),
 	}
 
-	go app.JobsProcessor.StartJobLoop(ctx)
+	{
+		jobScope := &scope.Job{
+			Cfg:    app.Cfg,
+			DB:     app.DB,
+			Qry:    app.Qry,
+			Client: app.Client,
+		}
+
+		go app.JobsProcessor.StartJobLoop(ctx, jobScope)
+	}
 
 	if app.Cfg.Mocking {
 		// mockedServices

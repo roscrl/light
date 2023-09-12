@@ -110,10 +110,6 @@ func (app *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (app *App) Stop() error {
 	app.Log.Info("server shutting down...")
 
-	if err := app.Listener.Close(); err != nil {
-		return fmt.Errorf("closing listener: %w", err)
-	}
-
 	app.Views.StopLocalBrowserRefreshChannelIfLocal()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

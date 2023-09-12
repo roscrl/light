@@ -6,13 +6,11 @@ CREATE TABLE jobs
     status         TEXT    NOT NULL DEFAULT 'pending' CHECK ( status IN ('pending', 'running', 'success', 'failed') ),
     run_at         INTEGER NOT NULL,
     arguments      TEXT    NOT NULL,
+    finished_at    INTEGER,
 
-    completed_at   INTEGER,
-
-    failed_at      INTEGER,
     failed_message TEXT,
 
-    created_at       INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
+    created_at     INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 ) STRICT;
 
 -- https://docs.gitlab.com/ee/development/database/constraint_naming_convention.html

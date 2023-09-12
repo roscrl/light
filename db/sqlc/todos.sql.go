@@ -10,6 +10,16 @@ import (
 	"database/sql"
 )
 
+const deleteTodoByID = `-- name: DeleteTodoByID :exec
+DELETE FROM todos
+WHERE id = ?
+`
+
+func (q *Queries) DeleteTodoByID(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteTodoByID, id)
+	return err
+}
+
 const getAllTodos = `-- name: GetAllTodos :many
 SELECT id, task, status, created_at
 FROM todos

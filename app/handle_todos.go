@@ -6,6 +6,8 @@ import (
 	"github.com/roscrl/light/core/helpers/rlog"
 	"github.com/roscrl/light/core/helpers/rlog/key"
 	"github.com/roscrl/light/core/helpers/ulid"
+	"github.com/roscrl/light/core/jobs"
+	"github.com/roscrl/light/core/jobs/tododelete"
 	"github.com/roscrl/light/core/models/todo"
 	"github.com/roscrl/light/core/views"
 	"github.com/roscrl/light/core/views/params"
@@ -119,17 +121,16 @@ func (app *App) handleTodosUpdate() http.HandlerFunc {
 
 func (app *App) handleTodosDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO example delete job here
-		//log, rctx := rlog.L(r)
-		//
-		//todoID := getField(r, 0)
+		log, rctx := rlog.L(r)
 
-		//if err := jobs.Enqueue(rctx, jobs.TodoDelete, tododelete.Args(todoID), app.Qry); err != nil {
-		//	log.ErrorContext(rctx, "failed to enqueue job", key.Err, err)
-		//	app.Views.RenderDefaultErrorPage(w)
-		//
-		//	return
-		//}
+		todoID := getField(r, 0)
+
+		if _, err := jobs.Enqueue(rctx, jobs.TodoDelete, tododelete.Args(todoID), app.Qry); err != nil {
+			log.ErrorContext(rctx, "failed to enqueue delete job", key.Err, err)
+			app.Views.RenderDefaultErrorPage(w)
+
+			return
+		}
 	}
 }
 

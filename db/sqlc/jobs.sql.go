@@ -10,28 +10,28 @@ import (
 	"database/sql"
 )
 
-const getOverdueJobsFromTime = `-- name: GetOverdueJobsFromTime :many
+const getOverduePendingJobsFromTime = `-- name: GetOverduePendingJobsFromTime :many
 SELECT id, name, arguments, run_at
 FROM jobs
 WHERE run_at <= ?1 AND status = 'pending'
 `
 
-type GetOverdueJobsFromTimeRow struct {
+type GetOverduePendingJobsFromTimeRow struct {
 	ID        string
 	Name      string
 	Arguments string
 	RunAt     int64
 }
 
-func (q *Queries) GetOverdueJobsFromTime(ctx context.Context, from int64) ([]GetOverdueJobsFromTimeRow, error) {
-	rows, err := q.db.QueryContext(ctx, getOverdueJobsFromTime, from)
+func (q *Queries) GetOverduePendingJobsFromTime(ctx context.Context, from int64) ([]GetOverduePendingJobsFromTimeRow, error) {
+	rows, err := q.db.QueryContext(ctx, getOverduePendingJobsFromTime, from)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetOverdueJobsFromTimeRow
+	var items []GetOverduePendingJobsFromTimeRow
 	for rows.Next() {
-		var i GetOverdueJobsFromTimeRow
+		var i GetOverduePendingJobsFromTimeRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -75,7 +75,7 @@ func (q *Queries) ScheduleNewJob(ctx context.Context, arg ScheduleNewJobParams) 
 
 const setFailedJob = `-- name: SetFailedJob :exec
 UPDATE jobs
-SET failed_at = strftime('%s', 'now'), failed_message = ?, status = 'failed'
+SET finished_at = strftime('%s', 'now'), failed_message = ?, status = 'failed'
 WHERE id = ?
 `
 
@@ -102,7 +102,7 @@ func (q *Queries) SetJobStatusToRunning(ctx context.Context, id string) error {
 
 const setSuccessfulJob = `-- name: SetSuccessfulJob :exec
 UPDATE jobs
-SET completed_at = strftime('%s', 'now'), status = 'success'
+SET finished_at = strftime('%s', 'now'), status = 'success'
 WHERE id = ?
 `
 

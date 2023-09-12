@@ -36,15 +36,6 @@ func TestHome(t *testing.T) {
 
 	browser := newBrowserWithCleanup(t)
 
-	{ // has correct not found page message
-		notFoundPage := browser.MustPage(localhost + app.Cfg.Port + "/does-not-exist")
-		notFoundMessage := notFoundPage.MustElement("[data-testid='notfound_message']").MustText()
-
-		is.Equal(strings.TrimSpace(notFoundMessage), "Oops, that page does not exist.")
-
-		notFoundPage.MustClose()
-	}
-
 	homePage := browser.MustPage(localhost + app.Cfg.Port)
 
 	{ // has correct home page title

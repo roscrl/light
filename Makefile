@@ -46,6 +46,9 @@ test:
 	go test --tags "$(BUILD_TAGS)" -v -race -cover ./... -coverprofile=bin/test-coverage.out -coverpkg=./...
 	go tool cover -html=bin/test-coverage.out -o bin/test-coverage-report.html
 
+test-coverage-html:
+	open bin/test-coverage-report.html
+
 test-browser-slow:
 	go test --tags "$(BUILD_TAGS)" -v -race ./tests/browser -rod=show,trace,slow=0.4s
 

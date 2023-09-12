@@ -4,7 +4,7 @@ Accept: text/vnd.turbo-stream.html
 Content-Type: application/x-www-form-urlencoded
 
 ### Todo Delete
-POST http://localhost:8080/todos/1/delete
+POST http://localhost:8080/todos/01HA08QB76HCFTYE49MFJJF8WQ/delete
 Accept: text/vnd.turbo-stream.html
 Content-Type: application/x-www-form-urlencoded
 

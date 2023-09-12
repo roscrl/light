@@ -1,10 +1,15 @@
 package jobs
 
-import "github.com/roscrl/light/core/jobs/tododelete"
+import (
+	"context"
+
+	"github.com/roscrl/light/core/jobs/scope"
+	"github.com/roscrl/light/core/jobs/tododelete"
+)
 
 type JobName string
 
-type JobFunc func(args map[string]any) error
+type JobFunc func(ctx context.Context, jobScope *scope.Job, args map[string]any) error
 
 type JobNameToJobFuncRegistry map[JobName]JobFunc
 
