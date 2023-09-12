@@ -125,7 +125,8 @@ func (app *App) handleTodosDelete() http.HandlerFunc {
 
 		todoID := getField(r, 0)
 
-		if _, err := jobs.Enqueue(rctx, jobs.TodoDelete, tododelete.Args(todoID), app.Qry); err != nil {
+		_, err := jobs.Enqueue(rctx, jobs.TodoDelete, tododelete.Args(todoID), app.Qry)
+		if err != nil {
 			log.ErrorContext(rctx, "failed to enqueue delete job", key.Err, err)
 			app.Views.RenderDefaultErrorPage(w)
 
