@@ -58,11 +58,11 @@ func (p *Processor) StartJobLoop(ctx context.Context, jobScope *scope.Job) {
 				p.Log.Error("processing due jobs", key.Err, err)
 			}
 		case <-ctx.Done():
-			p.Log.Info("context done, waiting for any remaining jobs to finish", "ctx", ctx.Err())
+			p.Log.InfoContext(ctx, "context done, waiting for any remaining jobs to finish", "ctx", ctx.Err())
 
 			p.JobsInFlight.Wait()
 
-			p.Log.Info("all jobs finished, exiting job loop")
+			p.Log.InfoContext(ctx, "all jobs finished, exiting job loop")
 
 			return
 		}

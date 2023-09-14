@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/roscrl/light/config"
-	"github.com/roscrl/light/core/helpers/rlog"
+	"github.com/roscrl/light/core/helpers/applog"
 	"github.com/roscrl/light/core/helpers/rlog/key"
 	"github.com/roscrl/light/core/jobs"
 	"github.com/roscrl/light/core/views"
@@ -48,8 +48,7 @@ func NewApp(ctx context.Context, cfg *config.App) *App {
 	app := &App{}
 
 	app.Cfg = cfg
-	app.Log = rlog.NewDefaultLogger()
-	slog.SetDefault(app.Log)
+	app.Log = applog.NewDefaultLogger()
 
 	app.DB = db.New(cfg.SqliteDBPath)
 	app.Qry = sqlc.New(app.DB)

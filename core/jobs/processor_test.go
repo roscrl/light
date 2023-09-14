@@ -3,12 +3,12 @@ package jobs
 import (
 	"context"
 	"log"
-	"log/slog"
 	"testing"
 	"time"
 
 	"github.com/matryer/is"
 
+	"github.com/roscrl/light/core/helpers/applog"
 	"github.com/roscrl/light/core/jobs/scope"
 	"github.com/roscrl/light/db"
 )
@@ -24,7 +24,7 @@ func TestProcessorOneJob(t *testing.T) {
 	processor := &Processor{
 		Qry:         qry,
 		Interval:    time.Millisecond * 100,
-		Log:         slog.Default(),
+		Log:         applog.NewDefaultLogger(),
 		JobFinished: make(chan string),
 		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
 			testJob: func(ctx context.Context, jobScope *scope.Job, args map[string]any) error {
@@ -59,7 +59,7 @@ func TestProcessorMultipleJobs(t *testing.T) {
 	processor := &Processor{
 		Qry:         qry,
 		Interval:    time.Millisecond * 100,
-		Log:         slog.Default(),
+		Log:         applog.NewDefaultLogger(),
 		JobFinished: make(chan string),
 		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
 			testJob: func(ctx context.Context, jobScope *scope.Job, args map[string]any) error {
@@ -117,7 +117,7 @@ func TestProcessorPanic(t *testing.T) {
 	processor := &Processor{
 		Qry:         qry,
 		Interval:    time.Millisecond * 100,
-		Log:         slog.Default(),
+		Log:         applog.NewDefaultLogger(),
 		JobFinished: make(chan string),
 		JobNameToJobFuncRegistry: JobNameToJobFuncRegistry{
 			testJob: func(ctx context.Context, jobScope *scope.Job, args map[string]any) error {

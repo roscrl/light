@@ -4,8 +4,8 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-	"os"
 
+	"github.com/roscrl/light/core/helpers/applog"
 	"github.com/roscrl/light/core/utils/contextutil"
 )
 
@@ -17,7 +17,7 @@ func L(r *http.Request) (*slog.Logger, context.Context) {
 		return logger, rctx
 	}
 
-	return NewDefaultLogger(), rctx
+	return applog.NewDefaultLogger(), rctx
 }
 
 // LW log with adds new key value arguments to the request scoped logger.
@@ -32,8 +32,4 @@ func LW(r *http.Request, args ...any) (*slog.Logger, *http.Request, context.Cont
 	r = r.WithContext(rctx)
 
 	return log, r, rctx
-}
-
-func NewDefaultLogger() *slog.Logger {
-	return slog.New(slog.NewTextHandler(os.Stdout, nil))
 }

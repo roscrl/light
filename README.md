@@ -118,3 +118,4 @@ gonew github.com/roscrl/light
 - Session management https://github.com/alexedwards/scs
 - Investigate https://www.sqlite.org/spellfix1.html
 - https://docs.gitlab.com/ee/ci/testing/ 
+- hotreload simple solution
