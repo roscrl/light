@@ -1,13 +1,14 @@
-{{define "todo:form-search"}}
-    <turbo-frame id="todo_form_search_frame" target="_top">
-        <form class="grid grid-rows-1 grid-cols-9 mt-0.5 w-128" method="GET" action="/todos/search" data-turbo-frame="todo_list" data-turbo-action="advance">
+{{define "job:form-search"}}
+    <turbo-frame id="job_form_search_frame" target="_top">
+        <form class="grid grid-rows-1 grid-cols-9 mt-0.5 w-128" method="GET" action="/admin/jobs/search"
+              data-turbo-frame="job_list" data-turbo-action="advance">
             <div class="flex flex-col px-1 mt-[4px] mx-1 p-[3px] overflow-hidden h-fit
                         col-start-1 col-end-10
                         sm:col-start-2 sm:col-end-9
                         lg:col-start-3 lg:col-end-8
                         xl:col-start-4 xl:col-end-7 relative">
                 <label class="relative block">
-                    <input name="query"
+                    <input name="id"
                            class="bg-gray-100 w-full
                                   focus:ring-inset
                                   p-1
@@ -16,10 +17,23 @@
                                   placeholder:text-center
                                   block"
                            autocomplete="off" maxlength="200"
-                           data-testid="todo_form_search_input"
-                           placeholder="search todo"
-                           value="{{.input_todo}}"
-                           onkeydown="clearTimeout(window.debounceTimer); window.debounceTimer = setTimeout(() => this.form.requestSubmit(), 30)">
+                           data-testid="job_form_search_input"
+                           placeholder="job id"
+                           value="{{.input_job}}">
+
+                    <div class="flex gap-2 mt-2 text-center items-center">
+                        <div class="w-[130px] text-sm">
+                            RunAt On/After
+                        </div>
+                        <input name="run_on_or_after"
+                               class="bg-gray-100 w-full
+                                  focus:ring-inset
+                                  rounded-[10px]
+                                  text-center
+                                  block"
+                               onchange="this.form.requestSubmit()"
+                               type="date">
+                    </div>
                 </label>
                 {{if .error}}
                     <div class="flex justify-center mx-3 px-1 mt-[6px] text-xs text-center
@@ -27,7 +41,7 @@
                             sm:col-start-2 sm:col-end-9
                             lg:col-start-3 lg:col-end-8
                             xl:col-start-4 xl:col-end-7">
-                        <span class="leading-none" data-testid="todo_form_search_error">{{ .error }}</span>
+                        <span class="leading-none" data-testid="job_form_search_error">{{ .error }}</span>
                     </div>
                 {{end}}
             </div>

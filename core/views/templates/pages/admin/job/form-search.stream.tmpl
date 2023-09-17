@@ -1,0 +1,13 @@
+<turbo-stream action="replace" target="job_form_search_frame">
+    <template>
+        {{ template "job:form-search" .}}
+    </template>
+</turbo-stream>
+
+{{ if not .error }}
+    <turbo-stream action="update" target="job_list">
+        <template>
+            {{ template "job:list" .jobs}}
+        </template>
+    </turbo-stream>
+{{ end }}

@@ -6,7 +6,11 @@ type Validator struct {
 	FieldErrors map[string]string
 }
 
-func (v Validator) HasErrors() bool {
+func New() *Validator {
+	return &Validator{}
+}
+
+func (v *Validator) HasErrors() bool {
 	return len(v.Errors) != 0 || len(v.FieldErrors) != 0
 }
 

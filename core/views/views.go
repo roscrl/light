@@ -8,7 +8,10 @@ const (
 	TodoCardUpdateStream = "pages/home/todo/card-update.stream.tmpl"
 
 	TodoFormSearchStream = "pages/home/todo/form-search-new.stream.tmpl"
-	TodoListSearchStream = "pages/home/todo/list-search.stream.tmpl"
+
+	Admin               = "pages/admin/admin.tmpl"
+	JobFormSearchStream = "pages/admin/job/form-search-new.stream.tmpl"
+	JobIDSearchStream   = "pages/admin/job/form-search.stream.tmpl"
 
 	NotFound = "pages/notfound.tmpl"
 	Error    = "pages/error.tmpl"

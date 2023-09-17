@@ -5,6 +5,8 @@ const (
 	Todos     = "todos"
 	InputTodo = "input_todo"
 
+	Jobs     = "jobs"
+	InputJob = "input_job"
+
 	Error = "error"
-	Local = "local"
 )

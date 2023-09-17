@@ -70,17 +70,18 @@ func (p *Processor) StartJobLoop(ctx context.Context, jobScope *scope.Job) {
 }
 
 func (p *Processor) processDueJobs(ctx context.Context, jobScope *scope.Job) error {
-	jobs, err := p.Qry.GetOverduePendingJobsFromTime(ctx, time.Now().Unix())
+	pendingJobs, err := p.Qry.GetOverduePendingJobsFromTime(ctx, time.Now().Unix())
 	if err != nil {
 		return fmt.Errorf("getting db pending jobs: %w", err)
 	}
 
-	for _, job := range jobs {
+	for _, job := range pendingJobs {
 		job := job
 
 		log := p.Log.WithGroup(keygroup.Job)
 		log = log.With(key.ID, job.ID, key.Name, job.Name, key.RunAt, job.RunAt)
 
+		// Fetch the associated job function.
 		jobFunc := p.JobNameToJobFuncRegistry[JobName(job.Name)]
 		if jobFunc == nil {
 			log.ErrorContext(ctx, "attempted to run due job but no matching job function found")
@@ -100,6 +101,7 @@ func (p *Processor) processDueJobs(ctx context.Context, jobScope *scope.Job) err
 			continue
 		}
 
+		// Unmarshal the job's arguments, if any.
 		var args map[string]any
 		if job.Arguments != "" {
 			if err := json.Unmarshal([]byte(job.Arguments), &args); err != nil {
@@ -123,6 +125,7 @@ func (p *Processor) processDueJobs(ctx context.Context, jobScope *scope.Job) err
 
 		p.JobsInFlight.Add(1)
 
+		// Run the pending job in a goroutine.
 		go func() {
 			defer func() {
 				p.JobsInFlight.Done()
@@ -130,8 +133,9 @@ func (p *Processor) processDueJobs(ctx context.Context, jobScope *scope.Job) err
 				select {
 				case p.JobFinished <- job.ID:
 				default:
-				} // Don't worry if JobID can't be sent.
+				} // Don't worry if JobID can't be sent for the channel.
 
+				// Recover from any panics during job processing.
 				if recovery := recover(); recovery != nil {
 					var err error
 					switch panicType := recovery.(type) {
@@ -167,6 +171,7 @@ func (p *Processor) processDueJobs(ctx context.Context, jobScope *scope.Job) err
 				return
 			}
 
+			// Run the job function
 			err := jobFunc(ctx, jobScope, args)
 			if err != nil {
 				log.ErrorContext(ctx, "job failed", key.Err, err)

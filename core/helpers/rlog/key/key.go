@@ -4,7 +4,6 @@ const (
 	ID   = "id"
 	Name = "name"
 
-	Count = "count"
 	RunAt = "run_at"
 
 	Err  = "error"

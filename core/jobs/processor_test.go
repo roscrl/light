@@ -66,6 +66,7 @@ func TestProcessorMultipleJobs(t *testing.T) {
 				is.Equal(args["hello"], "world!")
 
 				log.Println("test job!", args["hello"])
+				log.Println("nested arg", args["nested!"].(map[string]any)["123"])
 
 				return nil
 			},
@@ -84,6 +85,9 @@ func TestProcessorMultipleJobs(t *testing.T) {
 
 	enqueuedJobID1, err := Enqueue(ctx, testJob, map[string]any{
 		"hello": "world!",
+		"nested!": map[string]any{
+			"123": 123,
+		},
 	}, qry)
 	is.NoErr(err)
 

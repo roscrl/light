@@ -1,0 +1,24 @@
+{{define "job:list" }}
+    {{range .}}
+        <div class="grid grid-cols-12 gap-2 mb-2 w-full text-xs border-b py-1 border-slate-100 mb-1">
+            <div class="col-span-2">{{.ID}}</div>
+            <div>{{.Name}}</div>
+            <div>{{.Status}}</div>
+            <div>{{.RunAt | unixToTime | formatTime "06-01-02 15:04:05"}}</div>
+            <div class="truncate col-span-3">{{.Arguments}}</div>
+            <div>
+                {{ if .FinishedAt.Valid }}
+                    {{.FinishedAt.Int64 | unixToTime | formatTime "06-01-02 15:04:05"}}
+                {{ else }}
+                    ...
+                {{ end }}
+            </div>
+            <div class="truncate col-span-2">
+                {{ if .FailedMessage.Valid }}
+                    {{.FailedMessage.String}}
+                {{ end }}
+            </div>
+            <div>{{.CreatedAt | unixToTime | formatTime "06-01-02 15:04:05"}}</div>
+        </div>
+    {{end}}
+{{end}}

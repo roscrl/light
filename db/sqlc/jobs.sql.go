@@ -10,10 +10,124 @@ import (
 	"database/sql"
 )
 
+const getJobByID = `-- name: GetJobByID :one
+SELECT id, name, status, run_at, arguments, finished_at, failed_message, created_at
+FROM jobs
+WHERE id = ?
+`
+
+func (q *Queries) GetJobByID(ctx context.Context, id string) (Job, error) {
+	row := q.db.QueryRowContext(ctx, getJobByID, id)
+	var i Job
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Status,
+		&i.RunAt,
+		&i.Arguments,
+		&i.FinishedAt,
+		&i.FailedMessage,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getJobs = `-- name: GetJobs :many
+SELECT id, name, status, run_at, arguments, finished_at, failed_message, created_at
+FROM jobs
+ORDER BY run_at,
+         CASE status
+             WHEN 'running' THEN 1
+             WHEN 'pending' THEN 2
+             WHEN 'failed' THEN 3
+             WHEN 'success' THEN 4
+             ELSE 5
+             END
+LIMIT ?
+`
+
+func (q *Queries) GetJobs(ctx context.Context, limit int64) ([]Job, error) {
+	rows, err := q.db.QueryContext(ctx, getJobs, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Job
+	for rows.Next() {
+		var i Job
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Status,
+			&i.RunAt,
+			&i.Arguments,
+			&i.FinishedAt,
+			&i.FailedMessage,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getJobsAfterEqualRunAtDate = `-- name: GetJobsAfterEqualRunAtDate :many
+SELECT id, name, status, run_at, arguments, finished_at, failed_message, created_at
+FROM jobs
+WHERE run_at >= ?
+ORDER BY run_at
+LIMIT ?
+`
+
+type GetJobsAfterEqualRunAtDateParams struct {
+	From  int64
+	Limit int64
+}
+
+func (q *Queries) GetJobsAfterEqualRunAtDate(ctx context.Context, arg GetJobsAfterEqualRunAtDateParams) ([]Job, error) {
+	rows, err := q.db.QueryContext(ctx, getJobsAfterEqualRunAtDate, arg.From, arg.Limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Job
+	for rows.Next() {
+		var i Job
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Status,
+			&i.RunAt,
+			&i.Arguments,
+			&i.FinishedAt,
+			&i.FailedMessage,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getOverduePendingJobsFromTime = `-- name: GetOverduePendingJobsFromTime :many
 SELECT id, name, arguments, run_at
 FROM jobs
-WHERE run_at <= ?1 AND status = 'pending'
+WHERE run_at <= ?1
+  AND status = 'pending'
 `
 
 type GetOverduePendingJobsFromTimeRow struct {
@@ -75,7 +189,9 @@ func (q *Queries) ScheduleNewJob(ctx context.Context, arg ScheduleNewJobParams) 
 
 const setFailedJob = `-- name: SetFailedJob :exec
 UPDATE jobs
-SET finished_at = strftime('%s', 'now'), failed_message = ?, status = 'failed'
+SET finished_at    = strftime('%s', 'now'),
+    failed_message = ?,
+    status         = 'failed'
 WHERE id = ?
 `
 
@@ -102,7 +218,8 @@ func (q *Queries) SetJobStatusToRunning(ctx context.Context, id string) error {
 
 const setSuccessfulJob = `-- name: SetSuccessfulJob :exec
 UPDATE jobs
-SET finished_at = strftime('%s', 'now'), status = 'success'
+SET finished_at = strftime('%s', 'now'),
+    status      = 'success'
 WHERE id = ?
 `
 

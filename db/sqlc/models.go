@@ -14,8 +14,7 @@ type Job struct {
 	Status        string
 	RunAt         int64
 	Arguments     string
-	CompletedAt   sql.NullInt64
-	FailedAt      sql.NullInt64
+	FinishedAt    sql.NullInt64
 	FailedMessage sql.NullString
 	CreatedAt     int64
 }

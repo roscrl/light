@@ -1,0 +1,24 @@
+{{define "page:title"}}Admin{{end}}
+
+{{define "page:body"}}
+    {{ template "job:form-search" .}}
+
+    <div class="mx-8 mt-12">
+        <div class="grid grid-cols-12 gap-2 mb-2 font-bold text-md">
+            <div class="col-span-2">ID</div>
+            <div>Name</div>
+            <div>Status</div>
+            <div>Run At</div>
+            <div class="col-span-3">Arguments</div>
+            <div>Finished At</div>
+            <div class="col-span-2">Failed Message</div>
+            <div>Created At</div>
+        </div>
+
+        <turbo-frame id="job_list">
+            {{ template "job:list" .jobs }}
+        </turbo-frame>
+    </div>
+{{end}}
+
+{{template "base.tmpl" .}}

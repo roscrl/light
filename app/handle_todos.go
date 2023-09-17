@@ -15,12 +15,12 @@ import (
 )
 
 func (app *App) handleTodosCreate() http.HandlerFunc {
-	const formTask = "task"
+	const fieldTask = "task"
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		log, rctx := rlog.L(r)
 
-		task := r.FormValue(formTask)
+		task := r.FormValue(fieldTask)
 		if task == "" {
 			app.Views.RenderTurboStream(w, views.TodoFormNewStream, map[string]any{
 				params.Error: "task cannot be empty.",
@@ -74,8 +74,8 @@ func (app *App) handleTodosEdit() http.HandlerFunc {
 
 func (app *App) handleTodosUpdate() http.HandlerFunc {
 	const (
-		formStatus = "status"
-		formTask   = "task"
+		fieldStatus = "status"
+		fieldTask   = "task"
 	)
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -90,14 +90,14 @@ func (app *App) handleTodosUpdate() http.HandlerFunc {
 			return
 		}
 
-		status := r.FormValue(formStatus)
+		status := r.FormValue(fieldStatus)
 		if status == "" {
 			status = string(todo.Pending)
 		} else {
 			status = string(todo.Done)
 		}
 
-		task := r.FormValue(formTask)
+		task := r.FormValue(fieldTask)
 		if task == "" {
 			task = existingTodo.Task
 		}
@@ -137,7 +137,7 @@ func (app *App) handleTodosDelete() http.HandlerFunc {
 
 func (app *App) handleTodosSearch() http.HandlerFunc {
 	const (
-		formQuery = "query"
+		fieldQuery = "query"
 	)
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -148,7 +148,7 @@ func (app *App) handleTodosSearch() http.HandlerFunc {
 			err   error
 		)
 
-		query := r.FormValue(formQuery)
+		query := r.FormValue(fieldQuery)
 		if query == "" {
 			todos, err = app.Qry.GetAllTodos(rctx)
 		} else {
@@ -164,7 +164,7 @@ func (app *App) handleTodosSearch() http.HandlerFunc {
 			return
 		}
 
-		app.Views.RenderTurboStream(w, views.TodoListSearchStream, map[string]any{
+		app.Views.RenderPage(w, views.Home, map[string]any{
 			params.Todos: todos,
 		})
 	}

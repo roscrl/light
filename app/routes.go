@@ -32,6 +32,9 @@ const (
 	RouteDebugSymbol       = "/debug/symbol"
 	RouteDebugTrace        = "/debug/trace"
 
+	RouteAdmin             = "/admin"
+	RouteAdminJobsIDSearch = "/admin/jobs/search"
+
 	RouteLocalBrowserRefresh = "/local/browser/refresh"
 )
 
@@ -49,6 +52,10 @@ func (app *App) routes() http.Handler {
 	routes := []route{
 		newRoute(http.MethodGet, RouteAssets, app.handleAssets()),
 		newRoute(http.MethodGet, RouteHome, app.handleHome()),
+		newRoute(http.MethodGet, RouteTodosSearch, app.handleTodosSearch()),
+
+		newRoute(http.MethodGet, RouteAdmin, app.handleAdmin()),
+		newRoute(http.MethodGet, RouteAdminJobsIDSearch, app.handleAdminJobSearch()),
 	}
 
 	{
@@ -57,7 +64,6 @@ func (app *App) routes() http.Handler {
 			newRoute(http.MethodGet, RouteTodosEdit, app.handleTodosEdit()),
 			newRoute(http.MethodPost, RouteTodosUpdate, app.handleTodosUpdate()),
 			newRoute(http.MethodPost, RouteTodosDelete, app.handleTodosDelete()),
-			newRoute(http.MethodGet, RouteTodosSearch, app.handleTodosSearch()),
 		}
 
 		for _, route := range turboStreamRoutes {

@@ -29,6 +29,7 @@ var TemplateFuncs = template.FuncMap{
 	"timeSince":      time.Since,
 	"timeUntil":      time.Until,
 	"formatTime":     formatTime,
+	"unixToTime":     unixToTime,
 	"approxDuration": approxDuration,
 
 	// String functions
@@ -58,7 +59,11 @@ var TemplateFuncs = template.FuncMap{
 }
 
 func formatTime(format string, t time.Time) string {
-	return t.Format(format)
+	return t.UTC().Format(format)
+}
+
+func unixToTime(unix int64) time.Time {
+	return time.Unix(unix, 0)
 }
 
 func approxDuration(d time.Duration) string {
