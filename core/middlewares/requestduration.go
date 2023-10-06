@@ -9,8 +9,8 @@ import (
 	"github.com/roscrl/light/core/helpers/rlog/key"
 )
 
-func RequestDuration(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func RequestDuration(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasPrefix(r.URL.Path, "/assets") || strings.HasPrefix(r.URL.Path, "/local/browser/refresh") {
 			next.ServeHTTP(w, r)
 
@@ -25,5 +25,5 @@ func RequestDuration(next http.Handler) http.HandlerFunc {
 
 		log, rctx := rlog.L(r)
 		log.InfoContext(rctx, "request duration", key.Took, elapsed)
-	}
+	})
 }

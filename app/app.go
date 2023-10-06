@@ -20,6 +20,14 @@ import (
 	"github.com/roscrl/light/db/sqlc"
 )
 
+const (
+	ClientReadTimeout = 10 * time.Second
+
+	ServerReadTimeout  = 10 * time.Second
+	ServerWriteTimeout = 35 * time.Second
+	ServerIdleTimeout  = time.Minute
+)
+
 type App struct {
 	Cfg *config.App
 	Log *slog.Logger
@@ -40,7 +48,6 @@ type App struct {
 	HTTPServer *http.Server
 }
 
-//nolint:gomnd
 func NewApp(ctx context.Context, cfg *config.App) *App {
 	cfg.FrontendDistFS = views.FrontendDistFS
 	cfg.MustValidate()
@@ -56,7 +63,7 @@ func NewApp(ctx context.Context, cfg *config.App) *App {
 	app.Views = views.New(app.Cfg.Env)
 
 	app.Client = &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: ClientReadTimeout,
 	}
 
 	app.services(ctx)
@@ -65,9 +72,9 @@ func NewApp(ctx context.Context, cfg *config.App) *App {
 
 	app.HTTPServer = &http.Server{
 		Handler:      app.Router,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 35 * time.Second,
-		IdleTimeout:  time.Minute,
+		ReadTimeout:  ServerReadTimeout,
+		WriteTimeout: ServerWriteTimeout,
+		IdleTimeout:  ServerIdleTimeout,
 	}
 
 	return app

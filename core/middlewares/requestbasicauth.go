@@ -7,8 +7,8 @@ import (
 )
 
 // https://www.alexedwards.net/blog/basic-authentication-in-go
-func RequestBasicAuth(next http.HandlerFunc, correctUsername, correctPassword string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func RequestBasicAuth(next http.HandlerFunc, correctUsername, correctPassword string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		username, password, ok := r.BasicAuth()
 		if ok {
 			usernameHash := sha256.Sum256([]byte(username))
@@ -29,5 +29,5 @@ func RequestBasicAuth(next http.HandlerFunc, correctUsername, correctPassword st
 
 		w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-	}
+	})
 }

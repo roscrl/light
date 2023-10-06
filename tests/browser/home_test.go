@@ -22,7 +22,7 @@ func TestHome(t *testing.T) {
 	cfg := config.NewTestConfig()
 	cfg.SqliteDBPath = fmt.Sprintf("file:%s?mode=memory", ulid.NewString())
 
-	is, app := app.NewStartedAppWithCleanup(t, cfg)
+	is, app := app.NewAppStartedWithCleanup(t, cfg)
 	db.RunMigrations(app.DB)
 
 	todoID1, todoID2 := ulid.NewString(), ulid.NewString()
@@ -119,7 +119,7 @@ func TestHomeSearch(t *testing.T) {
 	cfg := config.NewTestConfig()
 	cfg.SqliteDBPath = fmt.Sprintf("file:%s?mode=memory", ulid.NewString())
 
-	is, app := app.NewStartedAppWithCleanup(t, cfg)
+	is, app := app.NewAppStartedWithCleanup(t, cfg)
 	db.RunMigrations(app.DB)
 
 	todoID1, todoID2 := ulid.NewString(), ulid.NewString()

@@ -9,19 +9,6 @@ import (
 	"github.com/roscrl/light/config"
 )
 
-func NewUnstartedTestApp(t *testing.T, cfg *config.App) (*is.I, *App) {
-	t.Helper()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	is, app := is.New(t), NewApp(ctx, cfg)
-
-	t.Cleanup(func() {
-		cancel()
-	})
-
-	return is, app
-}
-
 func NewAppBenchmarkWithCleanup(b *testing.B, cfg *config.App) *App {
 	ctx, cancel := context.WithCancel(context.Background())
 	app := NewApp(ctx, cfg)
@@ -37,7 +24,7 @@ func NewAppBenchmarkWithCleanup(b *testing.B, cfg *config.App) *App {
 	return app
 }
 
-func NewStartedAppWithCleanup(t *testing.T, cfg *config.App) (*is.I, *App) {
+func NewAppStartedWithCleanup(t *testing.T, cfg *config.App) (*is.I, *App) {
 	t.Helper()
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -48,6 +35,19 @@ func NewStartedAppWithCleanup(t *testing.T, cfg *config.App) (*is.I, *App) {
 	t.Cleanup(func() {
 		cancel()
 		is.NoErr(app.Stop())
+	})
+
+	return is, app
+}
+
+func NewAppUnstarted(t *testing.T, cfg *config.App) (*is.I, *App) {
+	t.Helper()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	is, app := is.New(t), NewApp(ctx, cfg)
+
+	t.Cleanup(func() {
+		cancel()
 	})
 
 	return is, app

@@ -4,6 +4,8 @@ const (
 	ID   = "id"
 	Name = "name"
 
+	Ctx = "ctx"
+
 	RunAt = "run_at"
 
 	Err  = "error"

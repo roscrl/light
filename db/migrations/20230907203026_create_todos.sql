@@ -6,4 +6,4 @@ CREATE TABLE todos
     created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
 ) STRICT;
 
-PRAGMA USER_VERSION = 3;
+PRAGMA USER_VERSION = 4;

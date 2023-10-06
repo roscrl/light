@@ -111,11 +111,9 @@ gonew github.com/roscrl/light
 - `core/notify` package for sending notifications (email, sms, push, etc)
 - E2E testing of VPS deployment as CI/CD workflow
 - Load testing https://shane.ai/posts/load-testing-tips/
-- Implement WebAuthn https://webauthn.guide
 - Replica to S3 for SQLite https://litestream.io
-- CSRF
 - Tailwind css formatter/autocomplete plugin, not working for some reason on Intellij multiple tickets open on Intellij YouTrack
-- Session management https://github.com/alexedwards/scs
+- Session management https://github.com/alexedwards/scs , fix bug with goroutine
 - Investigate https://www.sqlite.org/spellfix1.html
 - https://docs.gitlab.com/ee/ci/testing/ 
-- hotreload simple solution
+- Hotreload - find simple solution

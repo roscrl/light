@@ -8,12 +8,12 @@ import (
 	"github.com/roscrl/light/core/jobs/scope"
 )
 
-//nolint:revive,staticcheck,gocritic,wsl
+//nolint:revive,staticcheck,gocritic
 func (app *App) services(ctx context.Context) {
 	{
 		app.JobsProcessor = &jobs.Processor{
 			Qry:                      app.Qry,
-			Interval:                 time.Second * 5,
+			Interval:                 time.Second * 30,
 			Log:                      app.Log,
 			JobNameToJobFuncRegistry: jobs.DefaultRegistry(),
 		}
@@ -33,6 +33,4 @@ func (app *App) services(ctx context.Context) {
 	} else {
 		// realServices
 	}
-
-	// sharedServices
 }

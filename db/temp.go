@@ -11,7 +11,7 @@ import (
 func NewTempDBFileBenchmarkWithCleanup(b *testing.B) string {
 	temp, err := os.CreateTemp("", "app-*")
 	if err != nil {
-		b.Fatalf("error creating temp file: %s", err)
+		b.Fatalf("creating temp file: %s", err)
 	}
 
 	b.Cleanup(func() {
@@ -24,14 +24,14 @@ func NewTempDBFileBenchmarkWithCleanup(b *testing.B) string {
 func NewTempMigratedDBAndQueriesTestingWithCleanup(t *testing.T) (*sql.DB, *sqlc.Queries) {
 	temp, err := os.CreateTemp("", "app-*")
 	if err != nil {
-		t.Errorf("error creating temp file: %s", err)
+		t.Errorf("creating temp file: %s", err)
 	}
 
 	tempDB := New(temp.Name())
 
 	t.Cleanup(func() {
 		if err := tempDB.Close(); err != nil {
-			t.Errorf("error closing temp db: %s", err)
+			t.Errorf("closing temp db: %s", err)
 		}
 
 		os.Remove(temp.Name())

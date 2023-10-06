@@ -13,7 +13,7 @@ import (
 func TestHandleHealth(t *testing.T) {
 	t.Parallel()
 
-	is, app := NewUnstartedTestApp(t, config.NewTestConfig())
+	is, app := NewAppUnstarted(t, config.NewTestConfig())
 
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, RouteHealth, nil)

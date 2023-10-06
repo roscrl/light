@@ -8,8 +8,8 @@ import (
 	"github.com/roscrl/light/core/helpers/rlog/key"
 )
 
-func RequestRecoverer(next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func RequestRecoverer(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if recovery := recover(); recovery != nil {
 				var err error
@@ -29,5 +29,5 @@ func RequestRecoverer(next http.Handler) http.HandlerFunc {
 			}
 		}()
 		next.ServeHTTP(w, r)
-	}
+	})
 }

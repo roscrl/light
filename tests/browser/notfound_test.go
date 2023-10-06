@@ -13,7 +13,7 @@ import (
 func TestNotFound(t *testing.T) {
 	t.Parallel()
 
-	is, app := app.NewStartedAppWithCleanup(t, config.NewTestConfig())
+	is, app := app.NewAppStartedWithCleanup(t, config.NewTestConfig())
 
 	browser := newBrowserWithCleanup(t)
 
